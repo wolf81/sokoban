@@ -1,0 +1,17 @@
+{
+  "assets": [
+    "Jumpman/Jumpman.ttf",
+    "Jumpman/License.txt",
+    "kenney-sokoban-pack/sokoban_spritesheet.png",
+    "kenney-sokoban-pack/sokoban_spritesheet.xml",
+    "kenney-ui-audio/click5.ogg",
+    "kenney-ui-pack/button_rectangle_depth_line.png",
+    "kenney-ui-pack/button_rectangle_line.png",
+    "kenney-ui-pack/button_square_border.png",
+    "kenney-ui-pack/button_square_depth_border.png",
+    "kenney-ui-pack/button_square_depth_flat.png",
+    "kenney-ui-pack/button_square_depth_gloss.png",
+    "kenney-ui-pack/button_square_flat.png",
+    "kenney-ui-pack/button_square_gloss.png"
+  ]
+}

@@ -5,6 +5,10 @@ export interface XmlNode {
   text?: string;
 }
 
+function trimNewlines(str: string): string {
+  return str.replace(/^(?:\r\n|\r|\n)+|(?:\r\n|\r|\n)+$/g, "");
+}
+
 function convertElement(el: Element): XmlNode {
   const node: XmlNode = {
     name: el.tagName,
@@ -20,9 +24,11 @@ function convertElement(el: Element): XmlNode {
     if (child.nodeType === Node.ELEMENT_NODE) {
       node.children.push(convertElement(child as Element));
     } else if (child.nodeType === Node.TEXT_NODE) {
-      const text = child.textContent?.trim();
-      if (text) {
-        node.text = text;
+      if (child.textContent) {
+        const text = trimNewlines(child.textContent);
+        if (text) {
+          node.text = text;
+        }
       }
     }
   }
@@ -34,8 +40,8 @@ function convertElement(el: Element): XmlNode {
  * A very basic XML parser. Included to avoid adding dependencies, but it might
  * not be the most performant.
  */
-export class XmlParser {
-  static parse(xmlString: string): XmlNode {
+export const XmlParser = {
+  parse(xmlString: string): XmlNode {
     let xml: Document;
 
     try {
@@ -55,9 +61,9 @@ export class XmlParser {
 
     const root = xml.documentElement;
     return convertElement(root);
-  }
+  },
 
-  static findNodes(
+  findNodes(
     root: XmlNode,
     tagName: string,
     attrs?: Record<string, string>
@@ -77,17 +83,14 @@ export class XmlParser {
 
     visit(root);
     return result;
-  }
+  },
 
-  static matchAttributes(
-    node: XmlNode,
-    attrs: Record<string, string>
-  ): boolean {
+  matchAttributes(node: XmlNode, attrs: Record<string, string>): boolean {
     for (const [key, val] of Object.entries(attrs)) {
       if (node.attributes[key] !== val) {
         return false;
       }
     }
     return true;
-  }
-}
+  },
+};

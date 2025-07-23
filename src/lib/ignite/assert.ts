@@ -1,17 +1,17 @@
-export class Assert {
-  static true(condition: boolean, message: string) {
+export const Assert = {
+  true(condition: boolean, message: string) {
     if (condition) return;
 
     throw new Error(message);
-  }
+  },
 
-  static defined(obj: any, message: string) {
+  defined(obj: any, message: string) {
     if (obj) return;
 
     throw new Error(message);
-  }
+  },
 
-  static false(condition: boolean, message: string) {
+  false(condition: boolean, message: string) {
     if (!condition) return;
 
     throw new Error(message);

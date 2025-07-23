@@ -1,12 +1,15 @@
+import { Level } from "./level";
 import {
-  AssetLoader,
-  InputListener,
-  Renderer,
   SceneManager,
+  InputListener,
+  AssetLoader,
   ServiceLocator,
   Timer,
-} from "./lib/ignite/ignite";
+  Renderer,
+} from "./lib/ignite";
+import { GameScene } from "./scenes/game_scene";
 import { Settings } from "./settings";
+import { Spritesheet } from "./spritesheet";
 // import { UI } from "./core/ui";
 // import { LoadingScene } from "./scenes/loading_scene";
 
@@ -33,7 +36,10 @@ export class Game {
 
   async init(): Promise<void> {
     await this._assetLoader.preload();
-    // this._sceneManager.switch(new LoadingScene());
+
+    this._assetLoader.loadSpriteSheet("sokoban_spritesheet");
+
+    this._sceneManager.switch(new GameScene(0));
   }
 
   update(dt: number) {

@@ -1,3 +1,5 @@
+import { Sprite } from "../../spritesheet";
+
 type Drawable = HTMLCanvasElement | HTMLImageElement;
 
 export type TextAlign = "left" | "right" | "center";
@@ -99,5 +101,19 @@ export class Renderer {
     this._draws += 1;
     this._ctx.fillStyle = options.color ?? "#ffffff";
     this._ctx.fillText(text, x, y + h / 2);
+  }
+
+  drawSprite(image: HTMLImageElement, sprite: Sprite, x: number, y: number) {
+    this._ctx.drawImage(
+      image,
+      sprite.x,
+      sprite.y,
+      sprite.w,
+      sprite.h,
+      x,
+      y,
+      sprite.w,
+      sprite.h
+    );
   }
 }

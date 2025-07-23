@@ -1,162 +1,110 @@
-import { Size } from "./size";
-import { Vector } from "./vector";
+import { vector } from "./vector";
+
+export type Rect = { kind: "rect"; x: number; y: number; w: number; h: number };
+export type Circle = { kind: "circle"; x: number; y: number; r: number };
+export type Shape = Rect | Circle;
+
+export const Shape = {
+  rect(x: number, y: number, w: number, h: number): Rect {
+    return { kind: "rect", x: x, y: y, w: w, h: h };
+  },
+
+  circle(x: number, y: number, r: number): Circle {
+    return { kind: "circle", x: x, y: y, r: r };
+  },
+
+  min(shape: Shape): vector {
+    return { x: shape.x, y: shape.y };
+  },
+
+  mid(shape: Shape): vector {
+    switch (shape.kind) {
+      case "circle":
+        return { x: shape.x + shape.r, y: shape.y + shape.r };
+      case "rect":
+        return { x: shape.x + shape.w / 2, y: shape.y + shape.h / 2 };
+    }
+  },
+
+  max(shape: Shape): vector {
+    switch (shape.kind) {
+      case "circle":
+        return { x: shape.x + shape.r * 2, y: shape.y + shape.r * 2 };
+      case "rect":
+        return { x: shape.x + shape.w, y: shape.y + shape.h };
+    }
+  },
+
+  containsPoint(shape: Shape, p: vector): boolean {
+    switch (shape.kind) {
+      case "circle":
+        return circleContainsPoint(shape, p);
+      case "rect":
+        return rectContainsPoint(shape, p);
+    }
+  },
+
+  intersects(shape1: Shape, shape2: Shape): boolean {
+    switch (shape1.kind) {
+      case "rect":
+        switch (shape2.kind) {
+          case "rect":
+            return rectIntersectsRect(shape1, shape2);
+          case "circle":
+            return circleIntersectsRect(shape2, shape1);
+        }
+      case "circle":
+        switch (shape2.kind) {
+          case "rect":
+            return circleIntersectsRect(shape1, shape2);
+          case "circle":
+            return circleIntersectsCircle(shape1, shape2);
+        }
+    }
+  },
+};
+
+// Private
+
+function rectContainsPoint(rect: Rect, point: vector): boolean {
+  const x2 = rect.x + rect.w;
+  const y2 = rect.y + rect.h;
+  return (
+    point.x >= rect.x && point.x <= x2 && point.y >= rect.y && point.y <= y2
+  );
+}
+
+function circleContainsPoint(circle: Circle, point: vector): boolean {
+  const cx = circle.x + circle.r;
+  const cy = circle.y + circle.r;
+  const dx = cx - point.x;
+  const dy = cy - point.y;
+  return dx * dx + dy * dy <= Math.pow(circle.r, 2);
+}
+
+function circleIntersectsCircle(circle1: Circle, circle2: Circle): boolean {
+  const dx = circle1.x - circle2.x;
+  const dy = circle1.y - circle2.y;
+  const dxy = dx * dx + dy * dy;
+  const radiusSum = circle1.r + circle2.r;
+  return dxy < radiusSum * radiusSum;
+}
 
 function circleIntersectsRect(circle: Circle, rect: Rect): boolean {
-  const cx = circle.xMid;
-  const cy = circle.yMid;
-  const r = circle.radius;
-
-  // Clamp circle center to rectangle bounds
-  const closestX = Math.max(rect.x1, Math.min(cx, rect.x2));
-  const closestY = Math.max(rect.y1, Math.min(cy, rect.y2));
-
-  const dx = cx - closestX;
-  const dy = cy - closestY;
-
-  return dx * dx + dy * dy < r * r;
+  const cx = circle.x + circle.r;
+  const cy = circle.y + circle.r;
+  const nx = Math.max(rect.x, Math.min(cx, rect.x + rect.w));
+  const ny = Math.max(rect.y, Math.min(cy, rect.y + rect.h));
+  const dx = cx - nx;
+  const dy = cy - ny;
+  return dx * dx + dy * dy < circle.r * circle.r;
 }
 
-/**
- * Subclasses of Shape can be used for basic collision detection.
- */
-export abstract class Shape {
-  protected _pos: Vector;
-
-  get pos(): Vector {
-    return this._pos;
-  }
-
-  get x(): number {
-    return this._pos.x;
-  }
-
-  get y(): number {
-    return this._pos.y;
-  }
-
-  set pos(v: Vector) {
-    this._pos = v;
-  }
-
-  constructor(pos: Vector) {
-    this._pos = pos;
-  }
-
-  abstract intersects(shape: Shape): boolean;
-
-  abstract containsPoint(v: Vector): boolean;
-}
-
-export class Rect extends Shape {
-  private _size: Size;
-
-  get size(): Size {
-    return this._size;
-  }
-
-  get x1(): number {
-    return this._pos.x;
-  }
-
-  get xMid(): number {
-    return this._pos.x + this._size.w / 2;
-  }
-
-  get x2(): number {
-    return this._pos.x + this._size.w;
-  }
-
-  get y1(): number {
-    return this._pos.y;
-  }
-
-  get yMid(): number {
-    return this._pos.y + this._size.h / 2;
-  }
-
-  get y2(): number {
-    return this._pos.y + this._size.h;
-  }
-
-  get w(): number {
-    return this.size.w;
-  }
-
-  get h(): number {
-    return this.size.h;
-  }
-
-  constructor(pos: Vector, size: Size) {
-    super(pos);
-
-    this._size = size;
-  }
-
-  static get zero() {
-    return new Rect(Vector.zero, Size.zero);
-  }
-
-  intersects(shape: Shape): boolean {
-    if (shape instanceof Circle) {
-      return circleIntersectsRect(shape, this);
-    }
-
-    throw new Error(`Intersect check not implemented for ${shape}.`);
-  }
-
-  containsPoint(v: Vector): boolean {
-    return v.x >= this.x1 && v.x <= this.x2 && v.y >= this.y1 && v.y <= this.y2;
-  }
-}
-
-export class Circle extends Shape {
-  private _radius: number;
-
-  get radius(): number {
-    return this._radius;
-  }
-
-  get xMin(): number {
-    return this._pos.x;
-  }
-
-  get xMax(): number {
-    return this._pos.x + this._radius * 2;
-  }
-
-  get xMid(): number {
-    return this._pos.x + this._radius;
-  }
-
-  get yMin(): number {
-    return this._pos.y;
-  }
-
-  get yMid(): number {
-    return this._pos.y + this._radius;
-  }
-
-  get yMax(): number {
-    return this._pos.y + this._radius * 2;
-  }
-
-  constructor(pos: Vector, radius: number) {
-    super(pos);
-
-    this._radius = radius;
-  }
-
-  intersects(shape: Shape): boolean {
-    if (shape instanceof Rect) {
-      return circleIntersectsRect(this, shape);
-    }
-
-    throw new Error(`Intersect check not implemented for ${shape}.`);
-  }
-
-  containsPoint(v: Vector): boolean {
-    const dx = this.xMid - v.x;
-    const dy = this.yMid - v.y;
-    return dx * dx + dy * dy <= Math.pow(this.radius, 2);
-  }
+function rectIntersectsRect(rect1: Rect, rect2: Rect): boolean {
+  return (
+    rect1.x < rect2.x + rect2.w &&
+    rect1.x + rect1.w > rect2.x &&
+    rect1.y < rect2.y + rect2.h &&
+    rect1.y + rect1.h > rect2.y
+  );
 }

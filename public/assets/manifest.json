@@ -12,6 +12,7 @@
     "kenney-ui-pack/button_square_depth_flat.png",
     "kenney-ui-pack/button_square_depth_gloss.png",
     "kenney-ui-pack/button_square_flat.png",
-    "kenney-ui-pack/button_square_gloss.png"
+    "kenney-ui-pack/button_square_gloss.png",
+    "levels.xml"
   ]
 }

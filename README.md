@@ -1,1 +1,3 @@
-# Sokoban
+# Pusherman
+
+A Sokoban clone.

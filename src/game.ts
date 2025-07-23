@@ -39,7 +39,7 @@ export class Game {
 
     this._assetLoader.loadSpriteSheet("sokoban_spritesheet");
 
-    this._sceneManager.switch(new GameScene(0));
+    this._sceneManager.switch(new GameScene(1));
   }
 
   update(dt: number) {

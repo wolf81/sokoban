@@ -1,36 +1,33 @@
-import { vector } from "./lib/ignite";
+import { Vector } from "./lib/ignite";
+import { TileType } from "./types";
 
 export type Entity = Box | Player;
 
 export type Box = {
-  readonly kind: "box";
-  pos: vector;
+  readonly type: TileType.Box;
+  pos: Vector;
 };
 
 export type Player = {
-  readonly kind: "player";
-  pos: vector;
+  readonly type: TileType.Player;
+  pos: Vector;
+};
+
+export type Goal = {
+  readonly type: TileType.Goal;
+  pos: Vector;
 };
 
 export const Entity = {
-  create(char: string, x: number, y: number): Entity {
-    switch (char) {
-      case "@":
-      case "+":
-        return player(x, y);
-      case "$":
-      case "*":
-        return box(x, y);
-    }
+  player(x: number, y: number): Player {
+    return { type: TileType.Player, pos: { x: x, y: y } };
+  },
 
-    throw new Error(`No entity type defined for character: ${char}`);
+  box(x: number, y: number): Box {
+    return { type: TileType.Box, pos: { x: x, y: y } };
+  },
+
+  goal(x: number, y: number): Goal {
+    return { type: TileType.Goal, pos: { x: x, y: y } };
   },
 };
-
-function player(x: number, y: number): Player {
-  return { kind: "player", pos: { x: x, y: y } };
-}
-
-function box(x: number, y: number): Box {
-  return { kind: "box", pos: { x: x, y: y } };
-}

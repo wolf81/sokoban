@@ -4,7 +4,7 @@ import { AssetLoader, Renderer, Scene, ServiceLocator } from "../lib/ignite";
 function loadLevel(index: number): Level {
   const assetLoader = ServiceLocator.resolve(AssetLoader);
   const levelXml = assetLoader.getXml("levels");
-  return Level.parse(levelXml, 0);
+  return Level.parse(levelXml, index);
 }
 
 export class GameScene extends Scene {
@@ -17,6 +17,7 @@ export class GameScene extends Scene {
   }
 
   update(dt: number): void {}
+
   draw(renderer: Renderer): void {
     Level.draw(this._level, renderer);
   }

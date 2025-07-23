@@ -1,4 +1,3 @@
-import { Level } from "./level";
 import {
   SceneManager,
   InputListener,
@@ -9,7 +8,6 @@ import {
 } from "./lib/ignite";
 import { GameScene } from "./scenes/game_scene";
 import { Settings } from "./settings";
-import { Spritesheet } from "./spritesheet";
 // import { UI } from "./core/ui";
 // import { LoadingScene } from "./scenes/loading_scene";
 

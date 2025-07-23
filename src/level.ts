@@ -21,7 +21,7 @@ export const Level = {
     const id = Number(levelNode.attributes["Id"]);
     const w = Number(levelNode.attributes["Width"]);
     const h = Number(levelNode.attributes["Height"]);
-    const grid = Grid.create(w, h);
+    const grid = Grid.new(w, h);
 
     const boxes: Box[] = [];
     const goals: Goal[] = [];

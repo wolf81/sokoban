@@ -19,7 +19,7 @@ const renderer = new Renderer(ctx);
  * @param time The current time.
  */
 function gameLoop(time: number) {
-  renderer.startFrame();
+  renderer.startFrame("#445555");
 
   // Ensure the update method runs at a fixed time-step, regardless of fps
   // drops.

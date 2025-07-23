@@ -12,7 +12,7 @@ export type Grid = {
 };
 
 export const Grid = {
-  create(w: number, h: number): Grid {
+  new(w: number, h: number): Grid {
     const values: TileType[] = [];
 
     for (let y = 0; y < h; y++) {

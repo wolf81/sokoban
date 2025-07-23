@@ -24,11 +24,14 @@ export class Renderer {
 
   /**
    * Call startFrame() when a new frame is being rendered. Internally this
-   * method will reset the draws count and clear the render context.
+   * method will reset the draws count and clears the render context.
+   * @param clearColor A color to clear the canvas width.
    */
-  startFrame() {
+  startFrame(clearColor: string = "#00000000") {
     this._draws = 0;
-    this._ctx.clearRect(0, 0, this._ctx.canvas.width, this._ctx.canvas.height);
+    this._ctx.fillStyle = clearColor;
+    this._ctx.fillRect(0, 0, this._ctx.canvas.width, this._ctx.canvas.height);
+    this._ctx.fillStyle = "#ffffff";
   }
 
   /**

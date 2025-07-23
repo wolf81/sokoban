@@ -1,14 +1,6 @@
-import { TILE_H, TILE_W } from "./constants";
 import { Box, Entity, Goal, Player } from "./entity";
 import { Grid } from "./grid";
-import {
-  Assert,
-  AssetLoader,
-  Renderer,
-  ServiceLocator,
-  XmlNode,
-  XmlParser,
-} from "./lib/ignite";
+import { Assert, XmlNode, XmlParser } from "./lib/ignite";
 import { TileType } from "./types";
 
 export type Level = {
@@ -74,69 +66,7 @@ export const Level = {
       goals: goals,
     };
   },
-
-  draw(level: Level, renderer: Renderer) {
-    const assetLoader = ServiceLocator.resolve(AssetLoader);
-    const image = assetLoader.getImage("sokoban_spritesheet")!;
-    const spriteSheet = assetLoader.getSpriteSheet("sokoban_spritesheet")!;
-
-    for (let y = 0; y < level.grid.h; y++) {
-      for (let x = 0; x < level.grid.w; x++) {
-        const tile = Grid.getTile(level.grid, x, y);
-
-        const spriteIndex = getSpriteIndex(tile);
-        const sprite = spriteSheet[spriteIndex];
-        renderer.drawSprite(image, sprite, x * TILE_W, y * TILE_H);
-      }
-    }
-
-    for (let box of level.boxes) {
-      const spriteIndex = getSpriteIndex(TileType.Box);
-      const sprite = spriteSheet[spriteIndex];
-      renderer.drawSprite(
-        image,
-        sprite,
-        box.pos.x * TILE_W,
-        box.pos.y * TILE_H
-      );
-    }
-
-    for (let goal of level.goals) {
-      const spriteIndex = getSpriteIndex(TileType.Goal);
-      const sprite = spriteSheet[spriteIndex];
-      renderer.drawSprite(
-        image,
-        sprite,
-        goal.pos.x * TILE_W,
-        goal.pos.y * TILE_H
-      );
-    }
-
-    const spriteIndex = getSpriteIndex(TileType.Player);
-    const sprite = spriteSheet[spriteIndex];
-    renderer.drawSprite(
-      image,
-      sprite,
-      level.player.pos.x * TILE_W,
-      level.player.pos.y * TILE_H
-    );
-  },
 };
-
-function getSpriteIndex(tile: TileType): number {
-  switch (tile) {
-    case TileType.Wall:
-      return 1; // 5
-    case TileType.Floor:
-      return 69;
-    case TileType.Goal:
-      return 72;
-    case TileType.Box:
-      return 10;
-    case TileType.Player:
-      return 78;
-  }
-}
 
 function* getTileTypes(char: string): Generator<TileType> {
   switch (char) {

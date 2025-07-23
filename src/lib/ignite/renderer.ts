@@ -104,6 +104,8 @@ export class Renderer {
   }
 
   drawSprite(image: HTMLImageElement, sprite: Sprite, x: number, y: number) {
+    this._draws += 1;
+
     this._ctx.drawImage(
       image,
       sprite.x,

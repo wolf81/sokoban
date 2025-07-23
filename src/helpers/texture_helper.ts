@@ -1,6 +1,6 @@
 type Drawable = HTMLImageElement | HTMLCanvasElement;
 
-export class TextureHelper {
+export const TextureHelper = {
   /**
    * Generate a texture.
    * @param w The target width, in pixels.
@@ -8,7 +8,7 @@ export class TextureHelper {
    * @param onDraw Use this function to draw on the context.
    * @returns A HTML canvas with the generated texture.
    */
-  static generate(
+  generate(
     w: number,
     h: number,
     onDraw: (ctx: CanvasRenderingContext2D) => void
@@ -19,7 +19,7 @@ export class TextureHelper {
     const ctx = canvas.getContext("2d")!;
     onDraw(ctx);
     return canvas;
-  }
+  },
 
   /**
    * Stretch an image using a 9-patch mechanism.
@@ -31,7 +31,7 @@ export class TextureHelper {
    * stretched.
    * @returns A stretched image.
    */
-  static stretch(
+  stretch(
     image: Drawable,
     w: number,
     h: number,
@@ -68,5 +68,5 @@ export class TextureHelper {
     }
 
     return canvas;
-  }
-}
+  },
+};

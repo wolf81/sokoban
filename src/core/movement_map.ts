@@ -1,6 +1,6 @@
 import { Grid } from "./grid";
 import { Level } from "./level";
-import { TileType } from "./types";
+import { TileType } from "../types";
 
 export class MovementMap {
   private _blocked: boolean[][];

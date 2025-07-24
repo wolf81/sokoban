@@ -1,4 +1,4 @@
-import { TileType } from "./types";
+import { TileType } from "../types";
 
 export type Tile = {
   type: TileType;

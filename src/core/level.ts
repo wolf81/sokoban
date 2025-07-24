@@ -1,7 +1,7 @@
 import { Box, Entity, Goal, Player } from "./entity";
 import { Grid } from "./grid";
-import { Assert, XmlNode, XmlParser } from "./lib/ignite";
-import { TileType } from "./types";
+import { Assert, XmlNode, XmlParser } from "../lib/ignite";
+import { TileType } from "../types";
 
 export type Level = {
   id: number;

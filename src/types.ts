@@ -8,6 +8,12 @@ export enum TileType {
   Goal,
 }
 
+export enum ActionType {
+  Idle = 0,
+  Move,
+  Push,
+}
+
 export const Dir = {
   None: Vector.zero,
   N: Vector.new(0, -1),

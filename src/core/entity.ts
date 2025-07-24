@@ -1,5 +1,6 @@
-import { Vector } from "./lib/ignite";
-import { TileType } from "./types";
+import { Vector } from "../lib/ignite";
+import { TileType } from "../types";
+import { Action } from "./action";
 
 export type Entity = Box | Player | Goal;
 
@@ -11,6 +12,7 @@ export type Box = {
 export type Player = {
   readonly type: TileType.Player;
   pos: Vector;
+  action: Action;
 };
 
 export type Goal = {
@@ -20,7 +22,11 @@ export type Goal = {
 
 export const Entity = {
   player(x: number, y: number): Player {
-    return { type: TileType.Player, pos: { x: x, y: y } };
+    return {
+      type: TileType.Player,
+      pos: { x: x, y: y },
+      action: Action.idle(),
+    };
   },
 
   box(x: number, y: number): Box {

@@ -1,7 +1,7 @@
 import { Camera } from "../camera";
 import { TILE_H, TILE_W } from "../constants";
 import { LevelHelper } from "../helpers/level_helper";
-import { Level } from "../level";
+import { Level } from "../core/level";
 
 import {
   AssetLoader,
@@ -11,8 +11,9 @@ import {
   ServiceLocator,
   Vector,
 } from "../lib/ignite";
-import { MovementMap } from "../movement_map";
-import { Dir, TileType } from "../types";
+import { MovementMap } from "../core/movement_map";
+import { ActionType, Dir, TileType } from "../types";
+import { Action } from "../core/action";
 
 function loadLevel(index: number): Level {
   const assetLoader = ServiceLocator.resolve(AssetLoader);
@@ -37,6 +38,7 @@ export class GameScene extends Scene {
   private _inputListener: InputListener;
   private _camera: Camera;
   private _movementMap: MovementMap;
+  private _nextDir: Vector = Vector.zero;
 
   constructor(levelIndex: number) {
     super();
@@ -51,18 +53,26 @@ export class GameScene extends Scene {
   }
 
   update(dt: number): void {
-    if (this._inputListener.wasKeyReleased("w")) {
-      this.tryMovePlayer(Dir.N);
+    const action = this._level.player.action;
+
+    // Buffer next direction if key is pressed.
+    this._nextDir = Dir.None;
+    if (this._inputListener.isKeyDown("w")) {
+      this._nextDir = Dir.N;
+    } else if (this._inputListener.isKeyDown("a")) {
+      this._nextDir = Dir.W;
+    } else if (this._inputListener.isKeyDown("s")) {
+      this._nextDir = Dir.S;
+    } else if (this._inputListener.isKeyDown("d")) {
+      this._nextDir = Dir.E;
     }
-    if (this._inputListener.wasKeyReleased("a")) {
-      this.tryMovePlayer(Dir.W);
+
+    // If idle and direction is queued, try to move
+    if (action.type === ActionType.Idle && this._nextDir !== Dir.None) {
+      this.tryMovePlayer(Vector.clone(this._nextDir));
     }
-    if (this._inputListener.wasKeyReleased("s")) {
-      this.tryMovePlayer(Dir.S);
-    }
-    if (this._inputListener.wasKeyReleased("d")) {
-      this.tryMovePlayer(Dir.E);
-    }
+
+    Action.update(this._level.player.action, this._level, dt);
   }
 
   draw(renderer: Renderer): void {
@@ -101,11 +111,17 @@ export class GameScene extends Scene {
     return this._movementMap.isBlocked(pos.x, pos.y);
   }
 
+  isPlayerMoving(): boolean {
+    return this._level.player.action.type !== ActionType.Idle;
+  }
+
   tryMovePlayer(dir: Vector): boolean {
-    const nextPos = Vector.add(this._level.player.pos, dir);
+    const pos = this._level.player.pos;
+    const nextPos = Vector.add(pos, dir);
     if (this.isBlocked(nextPos)) return false;
 
-    this._level.player.pos = nextPos;
+    this._level.player.action = Action.move(pos, dir);
+
     return true;
   }
 }

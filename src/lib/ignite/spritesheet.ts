@@ -1,4 +1,4 @@
-import { XmlNode, XmlParser } from "./lib/ignite";
+import { XmlNode, XmlParser } from "./xml_parser";
 
 export type Sprite = {
   x: number;
@@ -8,7 +8,7 @@ export type Sprite = {
 };
 
 export const Spritesheet = {
-  create(xml: XmlNode): { image: string; sprites: Sprite[] } {
+  new(xml: XmlNode): { image: string; sprites: Sprite[] } {
     const sprites: Sprite[] = [];
 
     const imagePath = xml.attributes["imagePath"];

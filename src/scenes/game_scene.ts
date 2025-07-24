@@ -1,10 +1,10 @@
-import { Camera } from "../camera";
 import { TILE_H, TILE_W } from "../constants";
 import { LevelHelper } from "../helpers/level_helper";
 import { Level } from "../core/level";
 
 import {
   AssetLoader,
+  Camera,
   InputListener,
   Renderer,
   Scene,

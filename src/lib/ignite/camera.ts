@@ -1,4 +1,4 @@
-import { Vector } from "./lib/ignite";
+import { Vector } from "./vector";
 
 export class Camera {
   pos: Vector = Vector.zero;

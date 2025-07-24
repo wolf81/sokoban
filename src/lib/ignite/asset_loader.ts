@@ -1,4 +1,4 @@
-import { Sprite, Spritesheet } from "../../spritesheet";
+import { Sprite, Spritesheet } from "./spritesheet";
 import { XmlNode, XmlParser } from "./xml_parser";
 
 function getFileName(path: string): string {
@@ -47,7 +47,7 @@ export class AssetLoader {
   /**
    * Get a XML document by name.
    * @param name The filename without extension.
-   * @returns
+   * @returns 
    */
   getXml(name: string): XmlNode {
     return this._xmlRegistry.get(name)!;
@@ -118,7 +118,7 @@ export class AssetLoader {
 
         if (url.endsWith(".xml")) {
           const data = await fetch(url);
-          const xmlString = await data.text();
+          const xmlString = await data.text()
           const xml = XmlParser.parse(xmlString);
           this._xmlRegistry.set(getFileName(filePath), xml);
           continue;
@@ -135,7 +135,7 @@ export class AssetLoader {
    */
   loadSpriteSheet(xmlName: string) {
     const xml = this.getXml(xmlName);
-    const spriteSheet = Spritesheet.create(xml);
+    const spriteSheet = Spritesheet.new(xml);
     this._spriteSheetRegistry.set(spriteSheet.image, spriteSheet.sprites);
-  }
+  }  
 }

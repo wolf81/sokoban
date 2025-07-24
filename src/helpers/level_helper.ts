@@ -1,8 +1,7 @@
 import { TILE_W, TILE_H } from "../constants";
 import { Grid } from "../core/grid";
 import { Level } from "../core/level";
-import { Vector, ServiceLocator, AssetLoader } from "../lib/ignite";
-import { Sprite } from "../spritesheet";
+import { Vector, ServiceLocator, AssetLoader, Sprite } from "../lib/ignite";
 import { Dir, TileType } from "../types";
 import { TextureHelper } from "./texture_helper";
 

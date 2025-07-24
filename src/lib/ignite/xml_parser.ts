@@ -85,12 +85,15 @@ export const XmlParser = {
     return result;
   },
 
-  matchAttributes(node: XmlNode, attrs: Record<string, string>): boolean {
+  matchAttributes(
+    node: XmlNode,
+    attrs: Record<string, string>
+  ): boolean {
     for (const [key, val] of Object.entries(attrs)) {
       if (node.attributes[key] !== val) {
         return false;
       }
     }
     return true;
-  },
-};
+  }
+}

@@ -1,5 +1,5 @@
-import { Camera } from "../../camera";
-import { Sprite } from "../../spritesheet";
+import { Camera } from "./camera";
+import { Sprite } from "./spritesheet";
 
 type Drawable = HTMLCanvasElement | HTMLImageElement;
 
@@ -152,5 +152,5 @@ export class Renderer {
     } else {
       this._ctx.restore();
     }
-  }
+  }  
 }

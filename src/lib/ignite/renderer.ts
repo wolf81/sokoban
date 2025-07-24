@@ -113,8 +113,17 @@ export class Renderer {
    * @param sprite The sprite from the sprite sheet image.
    * @param x The x position, in pixels.
    * @param y The y position, in pixels.
+   * @param ox An optional x offset.
+   * @param oy An optional y offset.
    */
-  drawSprite(image: HTMLImageElement, sprite: Sprite, x: number, y: number) {
+  drawSprite(
+    image: HTMLImageElement,
+    sprite: Sprite,
+    x: number,
+    y: number,
+    ox: number = 0,
+    oy: number = 0
+  ) {
     this._draws += 1;
 
     this._ctx.drawImage(
@@ -123,8 +132,8 @@ export class Renderer {
       sprite.y,
       sprite.w,
       sprite.h,
-      x,
-      y,
+      x + ox,
+      y + oy,
       sprite.w,
       sprite.h
     );

@@ -14,6 +14,7 @@ import {
 import { MovementMap } from "../core/movement_map";
 import { ActionType, Dir, TileType } from "../types";
 import { Action } from "../core/action";
+import { Box } from "../core/entity";
 
 function loadLevel(index: number): Level {
   const assetLoader = ServiceLocator.resolve(AssetLoader);
@@ -101,7 +102,9 @@ export class GameScene extends Scene {
       image,
       sprite,
       this._level.player.pos.x * TILE_W,
-      this._level.player.pos.y * TILE_H
+      this._level.player.pos.y * TILE_H,
+      (TILE_W - sprite.w) / 2,
+      (TILE_H - sprite.h) / 2
     );
 
     renderer.applyCamera();
@@ -109,6 +112,13 @@ export class GameScene extends Scene {
 
   isBlocked(pos: Vector): boolean {
     return this._movementMap.isBlocked(pos.x, pos.y);
+  }
+
+  getBox(pos: Vector): Box | undefined {
+    for (let box of this._level.boxes) {
+      if (Vector.isEqual(box.pos, pos)) return box;
+    }
+    return undefined;
   }
 
   isPlayerMoving(): boolean {
@@ -120,7 +130,16 @@ export class GameScene extends Scene {
     const nextPos = Vector.add(pos, dir);
     if (this.isBlocked(nextPos)) return false;
 
-    this._level.player.action = Action.move(pos, dir);
+    const box = this.getBox(nextPos);
+    if (box) {
+      const nextNextPos = Vector.add(nextPos, dir);
+      if (this.isBlocked(nextNextPos) || this.getBox(nextNextPos)) {
+        return false;
+      }
+      this._level.player.action = Action.push(pos, dir, box);
+    } else {
+      this._level.player.action = Action.move(pos, dir);
+    }
 
     return true;
   }

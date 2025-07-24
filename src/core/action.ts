@@ -1,6 +1,6 @@
 import { Vector } from "../lib/ignite";
 import { ActionType } from "../types";
-import { Box } from "./entity";
+import { Box, Player } from "./entity";
 import { Level } from "./level";
 
 const ANIM_FRAME_COUNT = Math.floor(0.2 * 60);
@@ -46,19 +46,25 @@ export const Action = {
       case ActionType.Idle:
         return;
       case ActionType.Move:
-        const toPos = Vector.add(action.pos, action.dir);
-        action.frame += 1;
-        const t = action.frame / ANIM_FRAME_COUNT;
-
-        if (t >= 1) {
-          player.pos = toPos;
-          player.action = Action.idle();
-        } else {
-          player.pos = Vector.lerp(action.pos, toPos, t);
-        }
+        movePlayer(player, action);
         break;
       case ActionType.Push:
+        movePlayer(player, action);
+        action.box.pos = Vector.add(player.pos, action.dir);
         break;
     }
   },
 };
+
+function movePlayer(player: Player, action: MoveAction | PushAction) {
+  const toPos = Vector.add(action.pos, action.dir);
+  action.frame += 1;
+  const t = action.frame / ANIM_FRAME_COUNT;
+
+  if (t >= 1) {
+    player.pos = toPos;
+    player.action = Action.idle();
+  } else {
+    player.pos = Vector.lerp(action.pos, toPos, t);
+  }
+}

@@ -1,7 +1,7 @@
 import { Vector } from "./lib/ignite";
 import { TileType } from "./types";
 
-export type Entity = Box | Player;
+export type Entity = Box | Player | Goal;
 
 export type Box = {
   readonly type: TileType.Box;

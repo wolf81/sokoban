@@ -1,3 +1,4 @@
+import { Camera } from "../camera";
 import { TILE_H, TILE_W } from "../constants";
 import { LevelHelper } from "../helpers/level_helper";
 import { Level } from "../level";
@@ -24,17 +25,22 @@ function getSpriteIndex(tile: TileType): number {
 export class GameScene extends Scene {
   private _level: Level;
   private _background: HTMLCanvasElement;
+  private _camera: Camera;
 
   constructor(levelIndex: number) {
     super();
 
     this._level = loadLevel(levelIndex);
     this._background = LevelHelper.generateBackground(this._level);
+    this._camera = new Camera();
+    this._camera.scale = 0.75;
   }
 
   update(dt: number): void {}
 
   draw(renderer: Renderer): void {
+    renderer.applyCamera(this._camera);
+
     renderer.drawImage(this._background, 0, 0);
 
     const assetLoader = ServiceLocator.resolve(AssetLoader);
@@ -60,5 +66,7 @@ export class GameScene extends Scene {
       this._level.player.pos.x * TILE_W,
       this._level.player.pos.y * TILE_H
     );
+
+    renderer.applyCamera();
   }
 }

@@ -1,3 +1,4 @@
+import { Camera } from "../../camera";
 import { Sprite } from "../../spritesheet";
 
 type Drawable = HTMLCanvasElement | HTMLImageElement;
@@ -106,6 +107,13 @@ export class Renderer {
     this._ctx.fillText(text, x, y + h / 2);
   }
 
+  /**
+   * Draw a sprite.
+   * @param image The sprite sheet image.
+   * @param sprite The sprite from the sprite sheet image.
+   * @param x The x position, in pixels.
+   * @param y The y position, in pixels.
+   */
   drawSprite(image: HTMLImageElement, sprite: Sprite, x: number, y: number) {
     this._draws += 1;
 
@@ -120,5 +128,20 @@ export class Renderer {
       sprite.w,
       sprite.h
     );
+  }
+
+  /**
+   * Apply camera transformations before rendering. Call without argument to
+   * reset transformations.
+   * @param camera
+   */
+  applyCamera(camera?: Camera) {
+    if (camera) {
+      this._ctx.save();
+      this._ctx.scale(camera.scale, camera.scale);
+      this._ctx.translate(-camera.pos.x, -camera.pos.y);
+    } else {
+      this._ctx.restore();
+    }
   }
 }

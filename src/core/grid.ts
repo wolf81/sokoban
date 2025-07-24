@@ -1,16 +1,14 @@
 import { TileType } from "../types";
 
-export type Tile = {
-  type: TileType;
-  sprite: number;
-};
-
 export type Grid = {
   w: number;
   h: number;
   values: TileType[];
 };
 
+/**
+ * A tile grid.
+ */
 export const Grid = {
   new(w: number, h: number): Grid {
     const values: TileType[] = [];

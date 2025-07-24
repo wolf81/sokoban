@@ -2,6 +2,11 @@ import { Grid } from "./grid";
 import { Level } from "./level";
 import { TileType } from "../types";
 
+/**
+ * The movement map is used to determine movable coordinates. A coordinate that
+ * contains a wall is not movable. The movement map doesn't take into account
+ * box coordinates.
+ */
 export class MovementMap {
   private _blocked: boolean[][];
 
@@ -17,10 +22,21 @@ export class MovementMap {
     }
   }
 
+  /**
+   * Create a movement map for a given level.
+   * @param level
+   * @returns
+   */
   static forLevel(level: Level): MovementMap {
     return new MovementMap(level.grid);
   }
 
+  /**
+   * Check whether a coordinate is blocked.
+   * @param x
+   * @param y
+   * @returns True is the target coordinate is blocked.
+   */
   isBlocked(x: number, y: number): boolean {
     return this._blocked[y][x];
   }

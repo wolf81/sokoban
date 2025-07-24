@@ -13,6 +13,12 @@ export type Level = {
 };
 
 export const Level = {
+  /**
+   * Parse a level from an XML document.
+   * @param xml The XML document to parse.
+   * @param levelIndex The level index.
+   * @returns A level on success, otherwise an error.
+   */
   parse(xml: XmlNode, levelIndex: number): Level {
     const levelNodes = XmlParser.findNodes(xml, "Level");
 
@@ -69,6 +75,12 @@ export const Level = {
   },
 };
 
+/**
+ * Iterate over the tile types for given char. Some characters represent
+ * multiple tile types and thus can be iterated over multiple times.
+ * @param char
+ * @returns
+ */
 function* getTileTypes(char: string): Generator<TileType> {
   switch (char) {
     case " ":

@@ -4,7 +4,7 @@ import { Assert, XmlNode, XmlParser } from "../lib/ignite";
 import { TileType } from "../types";
 
 export type Level = {
-  id: number;
+  index: number;
   grid: Grid;
   player: Player;
   boxes: Box[];
@@ -19,7 +19,6 @@ export const Level = {
     Assert.true(levelIndex < levelNodes.length, "Index out of bounds.");
 
     const levelNode = levelNodes[levelIndex];
-    const id = Number(levelNode.attributes["Id"]);
     const w = Number(levelNode.attributes["Width"]);
     const h = Number(levelNode.attributes["Height"]);
     const grid = Grid.new(w, h);
@@ -60,7 +59,7 @@ export const Level = {
     Assert.defined(player, "No player found in level.");
 
     return {
-      id: id,
+      index: levelIndex,
       grid: grid,
       player: player!,
       boxes: boxes,

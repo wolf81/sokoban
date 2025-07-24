@@ -37,7 +37,7 @@ function getSpriteIndex(tile: TileType): number {
 
 function changeLevel(levelIndex: number) {
   const sceneManager = ServiceLocator.resolve(SceneManager);
-  sceneManager.switch(new GameScene(levelIndex + 1));
+  sceneManager.switch(new GameScene(levelIndex));
 }
 
 export class GameScene extends Scene {
@@ -68,6 +68,10 @@ export class GameScene extends Scene {
 
   update(dt: number): void {
     const action = this._level.player.action;
+
+    if (this._inputListener.wasKeyReleased("F5")) {
+      changeLevel(this._level.index);
+    }
 
     // Buffer next direction if key is pressed.
     this._nextDir = Dir.None;
@@ -101,7 +105,7 @@ export class GameScene extends Scene {
         }
 
         if (remaining === 0) {
-          Timer.after(1.0, () => changeLevel(this._level.id + 1));
+          Timer.after(1.0, () => changeLevel(this._level.index + 1));
         }
       }
 

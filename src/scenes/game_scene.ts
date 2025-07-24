@@ -1,4 +1,4 @@
-import { TILE_H, TILE_W } from "../constants";
+import { CANVAS_H, CANVAS_W, TILE_H, TILE_W } from "../constants";
 import { LevelHelper } from "../helpers/level_helper";
 import { Level } from "../core/level";
 
@@ -59,6 +59,11 @@ export class GameScene extends Scene {
     this._movementMap = MovementMap.forLevel(this._level);
     this._camera = new Camera();
     this._camera.scale = 0.75;
+
+    const maxW = Math.floor(CANVAS_W / TILE_W / this._camera.scale);
+    const maxH = Math.floor(CANVAS_H / TILE_H / this._camera.scale);
+    this._camera.pos.x = -((maxW - this._level.grid.w) / 2) * TILE_W;
+    this._camera.pos.y = -((maxH - this._level.grid.h) / 2) * TILE_H;
   }
 
   update(dt: number): void {

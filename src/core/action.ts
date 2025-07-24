@@ -1,3 +1,4 @@
+import { AudioHelper } from "../helpers/audio_helper";
 import { Vector } from "../lib/ignite";
 import { ActionType, Dir } from "../types";
 import { Box, Player } from "./entity";
@@ -42,10 +43,12 @@ export const Action = {
   },
 
   move(pos: Vector, dir: Vector): MoveAction {
+    AudioHelper.playRandomFootstep();
     return { type: ActionType.Move, frame: 0, pos: pos, dir: dir };
   },
 
   push(pos: Vector, dir: Vector, box: Box): PushAction {
+    AudioHelper.playRandomFootstep();
     return { type: ActionType.Push, frame: 0, pos: pos, dir: dir, box: box };
   },
 

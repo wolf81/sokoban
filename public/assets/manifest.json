@@ -2,6 +2,13 @@
   "assets": [
     "Jumpman/Jumpman.ttf",
     "Jumpman/License.txt",
+    "kenney-impact-sounds/footstep_concrete_000.ogg",
+    "kenney-impact-sounds/footstep_concrete_001.ogg",
+    "kenney-impact-sounds/footstep_concrete_002.ogg",
+    "kenney-impact-sounds/footstep_concrete_003.ogg",
+    "kenney-impact-sounds/footstep_concrete_004.ogg",
+    "kenney-music-jingles/jingles_SAX02.ogg",
+    "kenney-music-jingles/jingles_SAX03.ogg",
     "kenney-sokoban-pack/sokoban_spritesheet.png",
     "kenney-sokoban-pack/sokoban_spritesheet.xml",
     "kenney-ui-audio/click5.ogg",

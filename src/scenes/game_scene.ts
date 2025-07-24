@@ -15,9 +15,10 @@ import {
   Vector,
 } from "../lib/ignite";
 import { MovementMap } from "../core/movement_map";
-import { ActionType, Dir, TileType } from "../types";
+import { ActionType, Dir } from "../types";
 import { Action } from "../core/action";
 import { Actor, Box } from "../core/entity";
+import { AudioHelper } from "../helpers/audio_helper";
 
 export class GameScene extends Scene {
   private _level: Level;
@@ -86,6 +87,7 @@ export class GameScene extends Scene {
 
         // All boxes reached goal positions, so transition to next level.
         if (remaining === 0) {
+          Timer.after(0.2, () => AudioHelper.playAudio("jingles_SAX02"));
           Timer.after(1.0, () => changeLevel(this._level.index + 1));
         }
       }

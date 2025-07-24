@@ -44,4 +44,8 @@ export const Vector = {
     const len = Vector.length(v);
     return len === 0 ? { x: 0, y: 0 } : Vector.mul(v, 1 / len);
   },
+
+  isEqual(v1: Vector, v2: Vector): boolean {
+    return v1.x === v2.x && v1.y === v2.y;
+  },
 };

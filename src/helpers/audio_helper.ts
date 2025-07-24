@@ -1,7 +1,7 @@
 import { AssetLoader, ServiceLocator } from "../lib/ignite";
 
 export const AudioHelper = {
-  playAudio(name: string) {
+  playSound(name: string) {
     const assetLoader = ServiceLocator.resolve(AssetLoader);
     const audio = assetLoader.getAudio(name);
     audio.currentTime = 0; // Rewind if playing.
@@ -10,6 +10,6 @@ export const AudioHelper = {
 
   playRandomFootstep() {
     const idx = Math.floor(Math.random() * 4);
-    this.playAudio("footstep_concrete_00" + idx);
+    this.playSound("footstep_concrete_00" + idx);
   },
 };

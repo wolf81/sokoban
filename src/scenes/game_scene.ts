@@ -47,6 +47,8 @@ export class GameScene extends Scene {
     this._camera.pos.y = -((maxH - this._level.grid.h) / 2) * TILE_H;
   }
 
+  start() {}
+
   update(dt: number): void {
     // Reload current level if F5 is pressed.
     if (this._inputListener.wasKeyReleased("F5")) {
@@ -87,7 +89,7 @@ export class GameScene extends Scene {
 
         // All boxes reached goal positions, so transition to next level.
         if (remaining === 0) {
-          Timer.after(0.2, () => AudioHelper.playAudio("jingles_SAX02"));
+          Timer.after(0.2, () => AudioHelper.playSound("jingles_SAX02"));
           Timer.after(1.0, () => changeLevel(this._level.index + 1));
         }
       }

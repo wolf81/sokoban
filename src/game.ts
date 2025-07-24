@@ -1,3 +1,4 @@
+import { UI } from "./core/ui";
 import {
   SceneManager,
   InputListener,
@@ -7,6 +8,7 @@ import {
   Renderer,
 } from "./lib/ignite";
 import { GameScene } from "./scenes/game_scene";
+import { MainMenuScene as MenuScene } from "./scenes/menu_scene";
 import { Settings } from "./settings";
 // import { UI } from "./core/ui";
 // import { LoadingScene } from "./scenes/loading_scene";
@@ -29,7 +31,7 @@ export class Game {
     this._assetLoader = new AssetLoader();
     ServiceLocator.register(AssetLoader, this._assetLoader);
 
-    // UI.init(canvas);
+    UI.init(canvas);
   }
 
   async init(): Promise<void> {
@@ -38,6 +40,7 @@ export class Game {
     this._assetLoader.loadSpriteSheet("sokoban_spritesheet");
 
     this._sceneManager.switch(new GameScene(0));
+    this._sceneManager.push(new MenuScene());
   }
 
   update(dt: number) {
@@ -51,7 +54,7 @@ export class Game {
     this._inputListener.update();
 
     Timer.update(dt);
-    // UI.update();
+    UI.update();
   }
 
   draw(renderer: Renderer) {

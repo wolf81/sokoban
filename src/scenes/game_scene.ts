@@ -8,7 +8,9 @@ import {
   InputListener,
   Renderer,
   Scene,
+  SceneManager,
   ServiceLocator,
+  Timer,
   Vector,
 } from "../lib/ignite";
 import { MovementMap } from "../core/movement_map";
@@ -33,6 +35,11 @@ function getSpriteIndex(tile: TileType): number {
   throw new Error(`No sprite defined for tile: ${tile}`);
 }
 
+function changeLevel(levelIndex: number) {
+  const sceneManager = ServiceLocator.resolve(SceneManager);
+  sceneManager.switch(new GameScene(levelIndex + 1));
+}
+
 export class GameScene extends Scene {
   private _level: Level;
   private _background: HTMLCanvasElement;
@@ -40,6 +47,7 @@ export class GameScene extends Scene {
   private _camera: Camera;
   private _movementMap: MovementMap;
   private _nextDir: Vector = Vector.zero;
+  private _checkFinished: boolean = false;
 
   constructor(levelIndex: number) {
     super();
@@ -69,8 +77,42 @@ export class GameScene extends Scene {
     }
 
     // If idle and direction is queued, try to move
-    if (action.type === ActionType.Idle && this._nextDir !== Dir.None) {
-      this.tryMovePlayer(Vector.clone(this._nextDir));
+    if (action.type === ActionType.Idle) {
+      if (this._checkFinished) {
+        this._checkFinished = false;
+
+        let boxPositions = this._level.boxes.map((b) => b.pos);
+        let goalPositions = this._level.goals.map((g) => g.pos);
+        let remaining = goalPositions.length;
+
+        while (goalPositions.length > 0) {
+          let gp = goalPositions.pop()!;
+
+          for (let bp of boxPositions) {
+            if (Vector.isEqual(gp, bp)) {
+              remaining -= 1;
+            }
+          }
+        }
+
+        if (remaining === 0) {
+          Timer.after(1.0, () => changeLevel(this._level.id + 1));
+        }
+      }
+
+      if (this._nextDir !== Dir.None) {
+        const nextDir = Vector.clone(this._nextDir);
+        const didMove = this.tryMove(nextDir);
+        const didPush = !didMove && this.tryPush(nextDir);
+
+        if (didMove || didPush) {
+          this._level.turns += 1;
+        }
+
+        if (didPush) {
+          this._checkFinished = true;
+        }
+      }
     }
 
     Action.update(this._level.player.action, this._level, dt);
@@ -125,21 +167,28 @@ export class GameScene extends Scene {
     return this._level.player.action.type !== ActionType.Idle;
   }
 
-  tryMovePlayer(dir: Vector): boolean {
+  tryMove(dir: Vector): boolean {
     const pos = this._level.player.pos;
     const nextPos = Vector.add(pos, dir);
     if (this.isBlocked(nextPos)) return false;
+    if (this.getBox(nextPos)) return false;
 
+    this._level.player.action = Action.move(pos, dir);
+
+    return true;
+  }
+
+  tryPush(dir: Vector): boolean {
+    const pos = this._level.player.pos;
+    const nextPos = Vector.add(pos, dir);
     const box = this.getBox(nextPos);
-    if (box) {
-      const nextNextPos = Vector.add(nextPos, dir);
-      if (this.isBlocked(nextNextPos) || this.getBox(nextNextPos)) {
-        return false;
-      }
-      this._level.player.action = Action.push(pos, dir, box);
-    } else {
-      this._level.player.action = Action.move(pos, dir);
+    if (!box) return false;
+
+    const nextNextPos = Vector.add(nextPos, dir);
+    if (this.isBlocked(nextNextPos) || this.getBox(nextNextPos)) {
+      return false;
     }
+    this._level.player.action = Action.push(pos, dir, box);
 
     return true;
   }

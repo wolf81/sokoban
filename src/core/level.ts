@@ -9,6 +9,7 @@ export type Level = {
   player: Player;
   boxes: Box[];
   goals: Goal[];
+  turns: number;
 };
 
 export const Level = {
@@ -64,6 +65,7 @@ export const Level = {
       player: player!,
       boxes: boxes,
       goals: goals,
+      turns: 0,
     };
   },
 };

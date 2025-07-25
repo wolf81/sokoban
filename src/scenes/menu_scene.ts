@@ -39,17 +39,17 @@ export class MenuScene extends Scene {
     { imageName: "push-goal_3", description: "Move boxes on goals" },
     {
       imageName: "finish_1",
-      description: "Finish by moving each box on a goal",
+      description: "Win by moving each box on a goal",
     },
     {
       imageName: "finish_2",
-      description: "Finish by moving each box on a goal",
+      description: "Win by moving each box on a goal",
     },
     {
       imageName: "finish_3",
-      description: "Finish by moving each box on a goal",
+      description: "Win by moving each box on a goal",
     },
-    { imageName: "finish_3", description: "" },
+    { imageName: "finish_3", description: "Win by moving each box on a goal" },
   ];
   private _guideStep: number = this._guide.length - 1;
 
@@ -68,18 +68,20 @@ export class MenuScene extends Scene {
             Tidy.border(
               Tidy.vstack<Control>(
                 [
-                  UI.label("Pusherman", { textColor: "#b48000" }),
+                  UI.label("Pusherman", { textColor: "#b48000", size: 50 }),
                   this._continueButton,
                   UI.button("New Game", {
                     size: 32,
                     textColor: "b48000",
                     onClick: () => newGame(),
                   }),
+                  UI.flexSpace("vertical"),
+                  UI.label("Settings", { textColor: "#b48000", size: 32 }),
                 ],
-                { spacing: 20 }
+                { spacing: 16 }
               ),
               {
-                margin: Tidy.margin(16, 16, 16, 16),
+                margin: Tidy.margin(32, 32, 32, 32),
               }
             ),
           ]),
@@ -88,14 +90,28 @@ export class MenuScene extends Scene {
             Tidy.border(
               Tidy.vstack<Control>(
                 [
-                  UI.label("Instructions", { textColor: "#b48000" }),
+                  UI.label("Instructions", { size: 32, textColor: "#b48000" }),
                   this._guideView,
                   this._guideLabel,
+                  UI.flexSpace("vertical"),
+                  UI.label("Controls", { size: 32, textColor: "#b48000" }),
+                  UI.label("Press A to move left", {
+                    textColor: "#b48000",
+                  }),
+                  UI.label("Press W to move up", {
+                    textColor: "#b48000",
+                  }),
+                  UI.label("Press S to move down", {
+                    textColor: "#b48000",
+                  }),
+                  UI.label("Press D to move right", {
+                    textColor: "#b48000",
+                  }),
                 ],
-                { spacing: 20 }
+                { spacing: 16 }
               ),
               {
-                margin: Tidy.margin(16, 16, 16, 16),
+                margin: Tidy.margin(32, 32, 32, 32),
               }
             ),
           ]),

@@ -1,6 +1,15 @@
 {
   "assets": [
     "bfxr/push.wav",
+    "guide/finish_1.png",
+    "guide/finish_2.png",
+    "guide/finish_3.png",
+    "guide/push-goal_1.png",
+    "guide/push-goal_2.png",
+    "guide/push-goal_3.png",
+    "guide/walk-push_1.png",
+    "guide/walk-push_2.png",
+    "guide/walk-push_3.png",
     "kenney-impact-sounds/footstep_concrete_000.ogg",
     "kenney-impact-sounds/footstep_concrete_001.ogg",
     "kenney-impact-sounds/footstep_concrete_002.ogg",

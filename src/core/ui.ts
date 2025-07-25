@@ -24,11 +24,18 @@ type LabelOptions = {
   textColor: string;
   background: string;
 };
+
 type ButtonOptions = LabelOptions & {
   onClick: () => void;
   normalImage: string;
   hoverImage: string;
   activeImage: string;
+};
+
+// TODO: add aspect / scale support
+type ImageViewOptions = {
+  size: { w: number; h: number };
+  stretch: "horizontal" | "vertical" | "all" | "none";
 };
 
 export enum ControlState {
@@ -81,6 +88,37 @@ export abstract class Control implements Layoutable {
   abstract draw(renderer: Renderer): void;
 }
 
+export class ImageView extends Control {
+  private _image?: Drawable;
+  private _ox: number = 0;
+  private _oy: number = 0;
+
+  constructor(image?: Drawable, options?: Partial<ImageViewOptions>) {
+    super();
+
+    this._image = image;
+  }
+
+  set image(image: Drawable) {
+    this._image = image;
+
+    this._ox = Math.floor((this.frame.w - this._image.width) / 2);
+    this._oy = Math.floor((this.frame.h - this._image.height) / 2);
+  }
+
+  draw(renderer: Renderer): void {
+    if (!this._image) {
+      return;
+    }
+
+    renderer.drawImage(
+      this._image,
+      this.frame.x + this._ox,
+      this.frame.y + this._oy
+    );
+  }
+}
+
 export class Label extends Control {
   private _ox: number = 0;
   private _oy: number = 0;
@@ -90,6 +128,14 @@ export class Label extends Control {
   private _fontSize: number;
   private _backgroundName?: string;
   protected _background?: Drawable;
+
+  set text(text: string) {
+    this._text = text;
+  }
+
+  get text(): string {
+    return this._text;
+  }
 
   constructor(text: string, options?: Partial<LabelOptions>) {
     super();
@@ -262,6 +308,20 @@ export class UI {
     return Tidy.elem(new Button(title, options), {
       minSize: { w: 192, h: 64 },
       stretch: "horizontal",
+    });
+  }
+
+  // TODO: Fix ugly API, maybe support overloads?
+  static imageView(
+    image?: Drawable,
+    options?: Partial<ImageViewOptions>
+  ): Elem<ImageView> {
+    const size = options?.size ?? { w: 0, h: 0 };
+    const stretch = options?.stretch ?? "all";
+
+    return Tidy.elem(new ImageView(image, options), {
+      minSize: size,
+      stretch: stretch,
     });
   }
 

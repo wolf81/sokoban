@@ -7,8 +7,7 @@ import {
   Timer,
   Renderer,
 } from "./lib/ignite";
-import { GameScene } from "./scenes/game_scene";
-import { MainMenuScene as MenuScene } from "./scenes/menu_scene";
+import { MenuScene } from "./scenes/menu_scene";
 import { Settings } from "./settings";
 // import { UI } from "./core/ui";
 // import { LoadingScene } from "./scenes/loading_scene";
@@ -39,8 +38,7 @@ export class Game {
 
     this._assetLoader.loadSpriteSheet("sokoban_spritesheet");
 
-    this._sceneManager.switch(new GameScene(0));
-    this._sceneManager.push(new MenuScene());
+    this._sceneManager.switch(new MenuScene());
   }
 
   update(dt: number) {

@@ -1,5 +1,6 @@
 import { CANVAS_H, CANVAS_W } from "../constants";
-import { Control, UI } from "../core/ui";
+import { Level } from "../core/level";
+import { Control, ControlState, UI } from "../core/ui";
 import { AudioHelper } from "../helpers/audio_helper";
 import {
   ServiceLocator,
@@ -10,34 +11,28 @@ import {
   Renderer,
 } from "../lib/ignite";
 import { GameScene } from "./game_scene";
-import { InstructionsScene } from "./instructions_scene";
 
-function startGame() {
-  AudioHelper.playSound("click5");
-  const sceneManager = ServiceLocator.resolve(SceneManager);
-  sceneManager.pop();
-  (sceneManager.current as GameScene).start();
-}
+export class MenuScene extends Scene {
+  private _level: Level | undefined;
 
-function showInstructions() {
-  AudioHelper.playSound("click5");
-  const sceneManager = ServiceLocator.resolve(SceneManager);
-  sceneManager.pop();
-  sceneManager.push(new InstructionsScene());
-}
+  private _continueButton = UI.button("Continue", {
+    size: 32,
+    textColor: "b48000",
+    onClick: () => continueGame(this._level!),
+  });
 
-export class MainMenuScene extends Scene {
   private _layout: Layout<Control> = Tidy.border([
     UI.panel(),
     Tidy.border(
       [
         Tidy.vstack<Control>(
           [
-            UI.label("PusherMan!", { size: 40, textColor: "#ee2747" }),
-            UI.button("Play", { size: 32, onClick: () => startGame() }),
-            UI.button("Instructions", {
+            UI.label("PusherMan!", { size: 40, textColor: "#b48000" }),
+            this._continueButton,
+            UI.button("New Game", {
               size: 32,
-              onClick: () => showInstructions(),
+              textColor: "b48000",
+              onClick: () => startGame(),
             }),
           ],
           {
@@ -58,10 +53,13 @@ export class MainMenuScene extends Scene {
     // The contents will automatically stretch to fit width, but we need to
     // determine height manually in this case.
     const w = 300;
-    const h = 40 + 64 * 2 + 20 * 2 + 32;
+    const h = 40 + (64 + 20) * 4 + 32;
     const x = (CANVAS_W - w) / 2;
     const y = (CANVAS_H - h) / 2;
     this._layout.reshape(x, y, w, h);
+
+    this._level = Level.load();
+    this._continueButton.widget.isEnabled = this._level !== undefined;
   }
 
   update(dt: number): void {
@@ -75,4 +73,16 @@ export class MainMenuScene extends Scene {
       widget.draw(renderer);
     }
   }
+}
+
+function startGame() {
+  AudioHelper.playSound("click5");
+  const sceneManager = ServiceLocator.resolve(SceneManager);
+  sceneManager.switch(new GameScene(0));
+}
+
+function continueGame(level: Level) {
+  AudioHelper.playSound("click5");
+  const sceneManager = ServiceLocator.resolve(SceneManager);
+  sceneManager.switch(new GameScene(level));
 }

@@ -1,7 +1,6 @@
 {
   "assets": [
-    "Jumpman/Jumpman.ttf",
-    "Jumpman/License.txt",
+    "bfxr/push.wav",
     "kenney-impact-sounds/footstep_concrete_000.ogg",
     "kenney-impact-sounds/footstep_concrete_001.ogg",
     "kenney-impact-sounds/footstep_concrete_002.ogg",
@@ -20,6 +19,8 @@
     "kenney-ui-pack/button_square_depth_gloss.png",
     "kenney-ui-pack/button_square_flat.png",
     "kenney-ui-pack/button_square_gloss.png",
-    "levels.xml"
+    "levels.xml",
+    "poetsen-one/OFL.txt",
+    "poetsen-one/PoetsenOne.ttf"
   ]
 }

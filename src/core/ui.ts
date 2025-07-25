@@ -29,13 +29,7 @@ type ButtonOptions = LabelOptions & {
   normalImage: string;
   hoverImage: string;
   activeImage: string;
-  disabledImage: string;
 };
-
-function loadImage(name: string): Drawable {
-  const assetLoader = ServiceLocator.resolve(AssetLoader);
-  return assetLoader.getImage(name);
-}
 
 export enum ControlState {
   // Default state when no interactions happen inside the control.
@@ -50,6 +44,19 @@ export enum ControlState {
 
 export abstract class Control implements Layoutable {
   private _state: ControlState = ControlState.Normal;
+
+  protected _isEnabled = true;
+
+  set isEnabled(value: boolean) {
+    this._isEnabled = value;
+    this.setState(
+      this._isEnabled ? ControlState.Normal : ControlState.Disabled
+    );
+  }
+
+  get isEnabled(): boolean {
+    return this._isEnabled;
+  }
 
   protected _frame: Rect = Shape.rect(0, 0, 0, 0);
 
@@ -90,7 +97,7 @@ export class Label extends Control {
     this._text = text;
 
     this._textColor = options?.textColor ?? "#eeeeee";
-    const fontName = options?.font ?? "Jumpman";
+    const fontName = options?.font ?? "PoetsenOne";
     this._fontSize = options?.size ?? 24;
     this._font = `${this._fontSize}px ${fontName}`;
     this._backgroundName = options?.background;
@@ -118,10 +125,15 @@ export class Label extends Control {
       renderer.drawImage(this._background, this.frame.x, this.frame.y);
     }
 
+    const textColor =
+      this.state === ControlState.Disabled
+        ? hexColorWithAlpha(this._textColor, 0.5)
+        : this._textColor;
+
     renderer.drawText(this._text, this._ox, this._oy, {
       font: this._font,
       align: "center",
-      color: this._textColor,
+      color: textColor,
     });
   }
 }
@@ -183,8 +195,9 @@ export class Button extends Label {
     ]);
 
     for (let [state, imageName] of stateImageInfo) {
+      const alpha = state === ControlState.Disabled ? 0.5 : 1.0;
       let image: Drawable = assetLoader.getImage(imageName);
-      image = TextureHelper.stretch(image, rect.w, rect.h);
+      image = TextureHelper.stretch(image, rect.w, rect.h, 10, alpha);
       this._stateBackgrounds.set(state, image);
     }
 
@@ -198,6 +211,8 @@ export class Button extends Label {
   }
 
   update(dt: number): void {
+    if (!this._isEnabled) return;
+
     const isHit = Shape.containsPoint(this._frame, UI.mouse.pos);
     const isPress = isHit && UI.mouse.buttonState === "down";
     const isRelease =
@@ -284,4 +299,19 @@ export class UI {
       this._mouse.buttonState = "none";
     }
   }
+}
+
+function loadImage(name: string): Drawable {
+  const assetLoader = ServiceLocator.resolve(AssetLoader);
+  return assetLoader.getImage(name);
+}
+
+function hexColorWithAlpha(hex: string, alpha: number): string {
+  const alphaToHex = (alpha: number) => {
+    const clamped = Math.round(Math.max(0, Math.min(1, alpha)) * 255);
+    return clamped.toString(16).padStart(2, "0");
+  };
+
+  const baseColor = hex.replace(/^#/, "");
+  return `#${baseColor}${alphaToHex(alpha)}`;
 }

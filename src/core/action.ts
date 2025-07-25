@@ -49,6 +49,7 @@ export const Action = {
 
   push(pos: Vector, dir: Vector, box: Box): PushAction {
     AudioHelper.playRandomFootstep();
+    AudioHelper.playSound("push");
     return { type: ActionType.Push, frame: 0, pos: pos, dir: dir, box: box };
   },
 

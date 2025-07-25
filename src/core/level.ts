@@ -3,6 +3,8 @@ import { Grid } from "./grid";
 import { Assert, XmlNode, XmlParser } from "../lib/ignite";
 import { TileType } from "../types";
 
+const STORAGE_NAME = "state.json";
+
 export type Level = {
   index: number;
   grid: Grid;
@@ -72,6 +74,17 @@ export const Level = {
       goals: goals,
       turns: 0,
     };
+  },
+
+  save(level: Level) {
+    const json = JSON.stringify(level);
+    localStorage.setItem(STORAGE_NAME, json);
+  },
+
+  load(): Level | undefined {
+    const json = localStorage.getItem(STORAGE_NAME);
+    if (json === null) return undefined;
+    return JSON.parse(json);
   },
 };
 

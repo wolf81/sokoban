@@ -19,6 +19,7 @@ import { ActionType, Dir } from "../types";
 import { Action } from "../core/action";
 import { Actor, Box } from "../core/entity";
 import { AudioHelper } from "../helpers/audio_helper";
+import { MenuScene as MenuScene } from "./menu_scene";
 
 export class GameScene extends Scene {
   private _level: Level;
@@ -29,12 +30,17 @@ export class GameScene extends Scene {
   private _nextDir: Vector = Vector.zero;
   private _checkFinished: boolean = false;
 
-  constructor(levelIndex: number) {
+  constructor(level: Level | number) {
     super();
+
+    if (typeof level === "number") {
+      this._level = loadLevel(Number(level));
+    } else {
+      this._level = level;
+    }
 
     this._inputListener = ServiceLocator.resolve(InputListener);
 
-    this._level = loadLevel(levelIndex);
     this._background = LevelHelper.generateBackground(this._level);
     this._movementMap = MovementMap.forLevel(this._level);
     this._camera = new Camera();
@@ -47,12 +53,28 @@ export class GameScene extends Scene {
     this._camera.pos.y = -((maxH - this._level.grid.h) / 2) * TILE_H;
   }
 
-  start() {}
+  start() {
+    this._level = loadLevel(0);
+    this._background = LevelHelper.generateBackground(this._level);
+    this._movementMap = MovementMap.forLevel(this._level);
+    this._camera = new Camera();
+    this._camera.scale = 0.75;
+
+    // Move camera in order to show level in the center of the canvas.
+    const maxW = Math.floor(CANVAS_W / TILE_W / this._camera.scale);
+    const maxH = Math.floor(CANVAS_H / TILE_H / this._camera.scale);
+    this._camera.pos.x = -((maxW - this._level.grid.w) / 2) * TILE_W;
+    this._camera.pos.y = -((maxH - this._level.grid.h) / 2) * TILE_H;
+  }
 
   update(dt: number): void {
     // Reload current level if F5 is pressed.
     if (this._inputListener.wasKeyReleased("F5")) {
       changeLevel(this._level.index);
+    }
+    if (this._inputListener.wasKeyReleased("Escape")) {
+      Level.save(this._level);
+      showMenu();
     }
 
     // Buffer next direction if key is pressed.
@@ -231,4 +253,9 @@ function loadLevel(index: number): Level {
 function changeLevel(levelIndex: number) {
   const sceneManager = ServiceLocator.resolve(SceneManager);
   sceneManager.switch(new GameScene(levelIndex));
+}
+
+function showMenu() {
+  const sceneManager = ServiceLocator.resolve(SceneManager);
+  sceneManager.switch(new MenuScene());
 }

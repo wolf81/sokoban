@@ -35,7 +35,8 @@ export const TextureHelper = {
     image: Drawable,
     w: number,
     h: number,
-    border: number = 10
+    border: number = 10,
+    alpha: number = 1.0
   ): HTMLCanvasElement {
     const sw = image.width;
     const sh = image.height;
@@ -44,6 +45,8 @@ export const TextureHelper = {
     canvas.width = w;
     canvas.height = h;
     const ctx = canvas.getContext("2d")!;
+
+    ctx.globalAlpha = alpha;
 
     const dx = [0, border, w - border, w];
     const dy = [0, border, h - border, h];
@@ -66,6 +69,8 @@ export const TextureHelper = {
         ctx.drawImage(image, sX, sY, sW, sH, dX, dY, dW, dH);
       }
     }
+
+    ctx.globalAlpha = 1.0;
 
     return canvas;
   },

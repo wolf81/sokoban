@@ -15,20 +15,14 @@ export enum InputAction {
   Select = 1 << 11,
 }
 
-export enum InputMode {
-  Keyboard,
-  Gamepad,
-}
-
 /**
  - Always allow mouse input.
  - Switch between keyboard and gamepad as needed.
- - With regards to menu's, when mouse is used, hide focus, otherwise use focus on key press 
- - Keyboard actions should be mapped to input actions (gamepad mapped by default).
- - When key is pressed, related input action should fire.
- - Consumers can check if an input was fired.
+ - input actions are mapped to gamepad controls.
+ - Keyboard keys are mapped to input actions (gamepad controls are leading with regards to possible actions).
  - Use settings to map keyboard inputs to gamepad inputs with sensible defaults.
  - Ideally we develop games that can be played with standard SNES-like controls.
+ - TODO: With regards to UI controls, when mouse is used, hide focus, otherwise use focus on key press. 
  */
 
 /**
@@ -38,8 +32,6 @@ export class InputListener {
   private readonly _keyboardInputMap: Map<string, InputAction>;
   private readonly _gamepadInputMap: Map<number, InputAction>;
   private readonly _heldKeys: Set<string> = new Set<string>();
-
-  private _inputMode: InputMode = InputMode.Keyboard;
 
   private _mousePos: Vector = Vector.new(-1, -1);
   private _isMouseDown: boolean = false;

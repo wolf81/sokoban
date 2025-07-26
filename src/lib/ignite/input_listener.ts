@@ -52,7 +52,7 @@ export class InputListener {
       ["s", InputAction.DPadD],
       ["a", InputAction.DPadL],
       ["d", InputAction.DPadR],
-      ["space", InputAction.ButtonA],
+      ["backspace", InputAction.ButtonA],
       ["enter", InputAction.Start],
       ["escape", InputAction.Select],
     ]);

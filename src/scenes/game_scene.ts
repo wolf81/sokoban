@@ -103,25 +103,24 @@ export class GameScene extends Scene {
         this._checkFinished = false;
 
         let goalPositions = this._level.goals.map((g) => g.pos);
+        let boxes = Array.from(this._level.boxes);
+        let remaining = boxes.length;
 
-        let finishedBoxes: Set<Box> = new Set<Box>();
-        while (goalPositions.length > 0) {
-          let gp = goalPositions.pop()!;
+        for (let box of boxes) {
+          box.spriteIndex = 20;
 
-          for (let box of this._level.boxes) {
-            if (Vector.isEqual(box.pos, gp)) {
-              finishedBoxes.add(box);
+          for (let i = 0; i < goalPositions.length; i++) {
+            if (Vector.isEqual(box.pos, goalPositions[i])) {
+              box.spriteIndex = 10;
+              remaining -= 1;
+              goalPositions.splice(i, 1);
               break;
             }
           }
         }
 
-        for (let box of this._level.boxes) {
-          box.spriteIndex = finishedBoxes.has(box) ? 10 : 20;
-        }
-
         // All boxes reached goal positions, so transition to next level.
-        if (finishedBoxes.size === goalPositions.length) {
+        if (remaining === 0) {
           Timer.after(0.2, () => AudioHelper.playSound("jingles_SAX02"));
           Timer.after(1.0, () => changeLevel(this._level.index + 1));
         }

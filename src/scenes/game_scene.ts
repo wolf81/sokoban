@@ -5,6 +5,7 @@ import { Level } from "../core/level";
 import {
   AssetLoader,
   Camera,
+  InputAction,
   InputListener,
   Renderer,
   Runloop,
@@ -69,23 +70,23 @@ export class GameScene extends Scene {
 
   update(dt: number): void {
     // Reload current level if F5 is pressed.
-    if (this._inputListener.wasKeyReleased("F5")) {
+    if (this._inputListener.isInputReleased(InputAction.Start)) {
       changeLevel(this._level.index);
     }
-    if (this._inputListener.wasKeyReleased("Escape")) {
+    if (this._inputListener.isInputReleased(InputAction.Select)) {
       Level.save(this._level);
       showMenu();
     }
 
     // Buffer next direction if key is pressed.
     this._nextDir = Dir.None;
-    if (this._inputListener.isKeyDown("w")) {
+    if (this._inputListener.isInputDown(InputAction.DPadU)) {
       this._nextDir = Dir.N;
-    } else if (this._inputListener.isKeyDown("a")) {
+    } else if (this._inputListener.isInputDown(InputAction.DPadL)) {
       this._nextDir = Dir.W;
-    } else if (this._inputListener.isKeyDown("s")) {
+    } else if (this._inputListener.isInputDown(InputAction.DPadD)) {
       this._nextDir = Dir.S;
-    } else if (this._inputListener.isKeyDown("d")) {
+    } else if (this._inputListener.isInputDown(InputAction.DPadR)) {
       this._nextDir = Dir.E;
     }
 

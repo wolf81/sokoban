@@ -21,6 +21,7 @@ import { Action } from "../core/action";
 import { Actor, Box } from "../core/entity";
 import { AudioHelper } from "../helpers/audio_helper";
 import { MenuScene as MenuScene } from "./menu_scene";
+import { LevelsLoader } from "../helpers/levels_loader";
 
 export class GameScene extends Scene {
   private _level: Level;
@@ -35,7 +36,7 @@ export class GameScene extends Scene {
     super();
 
     if (typeof level === "number") {
-      this._level = loadLevel(Number(level));
+      this._level = LevelsLoader.loadLevel(Number(level));
     } else {
       this._level = level;
     }
@@ -55,7 +56,7 @@ export class GameScene extends Scene {
   }
 
   start() {
-    this._level = loadLevel(0);
+    this._level = LevelsLoader.loadLevel(0);
     this._background = LevelHelper.generateBackground(this._level);
     this._movementMap = MovementMap.forLevel(this._level);
     this._camera = new Camera();
@@ -276,12 +277,6 @@ export class GameScene extends Scene {
 
     return true;
   }
-}
-
-function loadLevel(index: number): Level {
-  const assetLoader = ServiceLocator.resolve(AssetLoader);
-  const levelXml = assetLoader.getXml("levels");
-  return Level.parse(levelXml, index);
 }
 
 function changeLevel(levelIndex: number) {

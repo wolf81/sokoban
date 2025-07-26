@@ -53,6 +53,24 @@ export class MenuScene extends Scene {
   ];
   private _guideStep: number = this._guide.length - 1;
 
+  private _resetLevelsButton = UI.button("Reset Levels", {
+    fontSize: 32,
+    textColor: "#b48000",
+    onClick: () => {
+      resetLevels();
+      this._resetLevelsButton.widget.isEnabled = false;
+    },
+  });
+
+  private _importLevelsButton = UI.button("Import Levels", {
+    fontSize: 32,
+    textColor: "#b48000",
+    onClick: async () => {
+      await importLevels();
+      this._resetLevelsButton.widget.isEnabled = true;
+    },
+  });
+
   private _continueButton = UI.button("Continue", {
     fontSize: 32,
     textColor: "b48000",
@@ -73,9 +91,11 @@ export class MenuScene extends Scene {
               this._continueButton,
               UI.button("New Game", {
                 fontSize: 32,
-                textColor: "b48000",
+                textColor: "#b48000",
                 onClick: () => newGame(),
               }),
+              this._importLevelsButton,
+              this._resetLevelsButton,
             ]),
           ],
           {
@@ -103,6 +123,9 @@ export class MenuScene extends Scene {
 
     this._level = Level.load();
     this._continueButton.widget.isEnabled = this._level !== undefined;
+
+    let levels = localStorage.getItem("levels.xml");
+    this._resetLevelsButton.widget.isEnabled = levels !== null;
   }
 
   override async init(): Promise<void> {
@@ -165,6 +188,7 @@ function newPanel(
 function newGame() {
   AudioHelper.playSound("click5");
   const sceneManager = ServiceLocator.resolve(SceneManager);
+
   sceneManager.switch(new GameScene(0));
 }
 
@@ -172,4 +196,42 @@ function continueGame(level: Level) {
   AudioHelper.playSound("click5");
   const sceneManager = ServiceLocator.resolve(SceneManager);
   sceneManager.switch(new GameScene(level));
+}
+
+function resetLevels() {
+  localStorage.removeItem("levels.xml");
+}
+
+function importLevels(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".slc";
+    input.style.display = "none";
+
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (!file) {
+        reject(new Error("No file selected"));
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        var xmlString = reader.result as string;
+        localStorage.setItem("levels.xml", xmlString);
+        resolve();
+        document.body.removeChild(input);
+      };
+      reader.onerror = () => {
+        reject(reader.error);
+        document.body.removeChild(input);
+      };
+
+      reader.readAsText(file);
+    };
+
+    document.body.appendChild(input);
+    input.click();
+  });
 }

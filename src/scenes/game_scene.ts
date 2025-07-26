@@ -30,7 +30,7 @@ export class GameScene extends Scene {
   private _camera: Camera;
   private _movementMap: MovementMap;
   private _nextDir: Vector = Vector.zero;
-  private _checkFinished: boolean = false;
+  private _checkFinished: boolean = true;
 
   constructor(level: Level | number) {
     super();
@@ -102,22 +102,26 @@ export class GameScene extends Scene {
       if (this._checkFinished) {
         this._checkFinished = false;
 
-        let boxPositions = this._level.boxes.map((b) => b.pos);
         let goalPositions = this._level.goals.map((g) => g.pos);
-        let remaining = goalPositions.length;
 
+        let finishedBoxes: Set<Box> = new Set<Box>();
         while (goalPositions.length > 0) {
           let gp = goalPositions.pop()!;
 
-          for (let bp of boxPositions) {
-            if (Vector.isEqual(gp, bp)) {
-              remaining -= 1;
+          for (let box of this._level.boxes) {
+            if (Vector.isEqual(box.pos, gp)) {
+              finishedBoxes.add(box);
+              break;
             }
           }
         }
 
+        for (let box of this._level.boxes) {
+          box.spriteIndex = finishedBoxes.has(box) ? 10 : 20;
+        }
+
         // All boxes reached goal positions, so transition to next level.
-        if (remaining === 0) {
+        if (finishedBoxes.size === goalPositions.length) {
           Timer.after(0.2, () => AudioHelper.playSound("jingles_SAX02"));
           Timer.after(1.0, () => changeLevel(this._level.index + 1));
         }

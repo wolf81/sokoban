@@ -88,6 +88,10 @@ export const Level = {
     if (json === null) return undefined;
     return JSON.parse(json);
   },
+
+  reset() {
+    localStorage.removeItem(STORAGE_NAME);
+  },
 };
 
 /**

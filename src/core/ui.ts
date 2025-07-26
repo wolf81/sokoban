@@ -163,7 +163,7 @@ export class Label extends Control {
   draw(renderer: Renderer): void {
     const textColor =
       this.state === ControlState.Disabled
-        ? hexColorWithAlpha(this._textColor, 0.5)
+        ? hexColorWithAlpha(this._textColor, 0.4)
         : this._textColor;
 
     renderer.drawText(this._text, this._ox, this._oy, {
@@ -207,6 +207,13 @@ export class Button extends Label {
     ControlState,
     Drawable
   >();
+
+  override set isEnabled(value: boolean) {
+    super.isEnabled = value;
+
+    let state = this.isEnabled ? ControlState.Normal : ControlState.Disabled;
+    this._background = this._stateBackgrounds.get(state)!;
+  }
 
   constructor(title: string, options: ButtonOptions) {
     super(title, options);
@@ -256,7 +263,7 @@ export class Button extends Label {
   }
 
   update(dt: number): void {
-    if (!this._isEnabled) return;
+    if (this.state === ControlState.Disabled) return;
 
     const isHit = Shape.containsPoint(this._frame, UI.mouse.pos);
     const isPress = isHit && UI.mouse.buttonState === "down";

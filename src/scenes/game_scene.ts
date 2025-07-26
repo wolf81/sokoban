@@ -31,6 +31,7 @@ export class GameScene extends Scene {
   private _movementMap: MovementMap;
   private _nextDir: Vector = Vector.zero;
   private _checkFinished: boolean = true;
+  private _revertDelay = 0;
 
   constructor(level: Level | number) {
     super();
@@ -70,6 +71,8 @@ export class GameScene extends Scene {
   }
 
   update(dt: number): void {
+    this._revertDelay = Math.max(this._revertDelay - dt, 0);
+
     // Reload current level if F5 is pressed.
     if (this._inputListener.isInputReleased(InputAction.Start)) {
       changeLevel(this._level.index);
@@ -79,8 +82,11 @@ export class GameScene extends Scene {
       showMenu();
     }
     if (this._level.player.action.type === ActionType.Idle) {
-      if (this._inputListener.isInputReleased(InputAction.ButtonA)) {
-        this.tryRevertMove();
+      if (this._inputListener.isInputDown(InputAction.ButtonA)) {
+        if (this._revertDelay === 0) {
+          this.tryRevertMove();
+          this._revertDelay = 0.15;
+        }
       }
     }
 

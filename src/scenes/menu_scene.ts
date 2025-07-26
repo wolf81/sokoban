@@ -61,55 +61,33 @@ export class MenuScene extends Scene {
 
   private _layout: Layout<Control> = Tidy.border(
     [
-      Tidy.hstack(
-        [
+      Tidy.hstack([
+        Tidy.vstack(
+          [
+            newPanel([
+              UI.label("Pusherman", { textColor: "#b48000", size: 50 }),
+              this._continueButton,
+              UI.button("New Game", {
+                size: 32,
+                textColor: "b48000",
+                onClick: () => newGame(),
+              }),
+            ]),
+          ],
+          {
+            spacing: 64,
+          }
+        ),
+        UI.flexSpace("horizontal"),
+        Tidy.vstack([
+          UI.flexSpace("vertical"),
           newPanel([
-            UI.label("Pusherman", { textColor: "#b48000", size: 50 }),
-            this._continueButton,
-            UI.button("New Game", {
-              size: 32,
-              textColor: "b48000",
-              onClick: () => newGame(),
-            }),
+            UI.label("Instructions", { size: 32, textColor: "#b48000" }),
+            this._guideView,
+            this._guideLabel,
           ]),
-          Tidy.vstack(
-            [
-              newPanel([
-                UI.label("Instructions", { size: 32, textColor: "#b48000" }),
-                this._guideView,
-                this._guideLabel,
-              ]),
-              newPanel([
-                UI.label("Keyboard Controls", {
-                  size: 32,
-                  textColor: "#b48000",
-                }),
-                UI.label("Press W to move up", {
-                  size: 26,
-                  textColor: "#b48000",
-                }),
-                UI.label("Press S to move down", {
-                  size: 26,
-                  textColor: "#b48000",
-                }),
-                UI.label("Press A to move left", {
-                  size: 26,
-                  textColor: "#b48000",
-                }),
-                UI.label("Press D to move right", {
-                  size: 26,
-                  textColor: "#b48000",
-                }),
-              ]),
-            ],
-            { stretch: "all", spacing: 64 }
-          ),
-        ],
-        {
-          stretch: "all",
-          spacing: 64,
-        }
-      ),
+        ]),
+      ]),
     ],
     { margin: Tidy.margin(64, 64, 64, 64) }
   );
@@ -164,20 +142,19 @@ export class MenuScene extends Scene {
 }
 
 function newPanel(
-  children: Layout<Control>[] | Layout<Control>,
-  options?: Partial<{ stretch: "none" | "all"; spacing: number }>
+  children: Layout<Control>[] | Layout<Control>
 ): Layout<Control> {
   return Tidy.border(
     [
       UI.panel(),
       Tidy.border(
         Tidy.vstack<Control>(children, {
-          spacing: options?.spacing ?? 16,
+          spacing: 16,
         }),
         { margin: Tidy.margin(32, 32, 32, 32) }
       ),
     ],
-    { stretch: options?.stretch }
+    { stretch: "none" }
   );
 }
 

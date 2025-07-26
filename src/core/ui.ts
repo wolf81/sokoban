@@ -11,7 +11,6 @@ import {
   Tidy,
 } from "../lib/ignite";
 
-type FontFamily = "Jumpman";
 type Drawable = HTMLCanvasElement | HTMLImageElement;
 type Mouse = {
   pos: Vector;
@@ -19,10 +18,11 @@ type Mouse = {
 };
 
 type LabelOptions = {
-  font: FontFamily;
-  size: number;
+  font: string;
+  fontSize: number;
+  lines: number;
   textColor: string;
-  background: string;
+  width: number;
 };
 
 type ButtonOptions = LabelOptions & {
@@ -30,6 +30,7 @@ type ButtonOptions = LabelOptions & {
   normalImage: string;
   hoverImage: string;
   activeImage: string;
+  size: { w: number; h: number };
 };
 
 // TODO: add aspect / scale support
@@ -124,10 +125,9 @@ export class Label extends Control {
   private _oy: number = 0;
   private _font: string;
   private _text: string;
+  private _lines: number;
   private _textColor: string;
   private _fontSize: number;
-  private _backgroundName?: string;
-  protected _background?: Drawable;
 
   set text(text: string) {
     this._text = text;
@@ -137,16 +137,15 @@ export class Label extends Control {
     return this._text;
   }
 
-  constructor(text: string, options?: Partial<LabelOptions>) {
+  constructor(text: string, options: LabelOptions) {
     super();
 
-    this._text = text;
+    this._lines = options.lines;
+    this._textColor = options.textColor;
+    this._fontSize = options.fontSize;
+    this._font = `${this._fontSize}px ${options.font}`;
 
-    this._textColor = options?.textColor ?? "#eeeeee";
-    const fontName = options?.font ?? "PoetsenOne";
-    this._fontSize = options?.size ?? 24;
-    this._font = `${this._fontSize}px ${fontName}`;
-    this._backgroundName = options?.background;
+    this._text = text;
   }
 
   override setFrame(rect: {
@@ -159,18 +158,9 @@ export class Label extends Control {
 
     this._ox = rect.x + Math.floor(rect.w / 2);
     this._oy = rect.y + Math.floor(rect.h / 2);
-
-    if (this._backgroundName) {
-      let image: Drawable = loadImage(this._backgroundName);
-      this._background = TextureHelper.stretch(image, rect.w, rect.h);
-    }
   }
 
   draw(renderer: Renderer): void {
-    if (this._background) {
-      renderer.drawImage(this._background, this.frame.x, this.frame.y);
-    }
-
     const textColor =
       this.state === ControlState.Disabled
         ? hexColorWithAlpha(this._textColor, 0.5)
@@ -180,6 +170,8 @@ export class Label extends Control {
       font: this._font,
       align: "center",
       color: textColor,
+      lines: this._lines,
+      width: this.frame.w,
     });
   }
 }
@@ -207,6 +199,8 @@ export class Panel extends Control {
 }
 
 export class Button extends Label {
+  protected _background!: Drawable;
+
   private _onClick: () => void;
 
   private _stateBackgrounds: Map<ControlState, Drawable> = new Map<
@@ -214,7 +208,7 @@ export class Button extends Label {
     Drawable
   >();
 
-  constructor(title: string, options?: Partial<ButtonOptions>) {
+  constructor(title: string, options: ButtonOptions) {
     super(title, options);
 
     this._onClick = options?.onClick ? options.onClick : () => {};
@@ -254,6 +248,11 @@ export class Button extends Label {
     super.setState(state);
 
     this._background = this._stateBackgrounds.get(this.state)!;
+  }
+
+  override draw(renderer: Renderer): void {
+    renderer.drawImage(this._background, this.frame.x, this.frame.y);
+    super.draw(renderer);
   }
 
   update(dt: number): void {
@@ -298,17 +297,49 @@ export class UI {
   }
 
   static label(text: string, options?: Partial<LabelOptions>): Elem<Label> {
-    return Tidy.elem(new Label(text, options), {
-      minSize: { w: 0, h: options?.size ?? 48 },
-      stretch: "horizontal",
-    });
+    let fontSize = options?.fontSize ?? 24;
+    let lines = options?.lines ?? 1;
+
+    return Tidy.elem(
+      new Label(text, {
+        textColor: options?.textColor ?? "#eeeeee",
+        font: options?.font ?? "PoetsenOne",
+        fontSize: fontSize,
+        lines: lines,
+        width: 0,
+      }),
+      {
+        minSize: { w: options?.width ?? 0, h: lines * fontSize },
+        stretch: "horizontal",
+      }
+    );
   }
 
   static button(title: string, options?: Partial<ButtonOptions>): Elem<Button> {
-    return Tidy.elem(new Button(title, options), {
-      minSize: { w: 192, h: 64 },
-      stretch: "horizontal",
-    });
+    let fontSize = options?.fontSize ?? 24;
+    let lines = options?.lines ?? 1;
+
+    const size = options?.size ?? { w: 0, h: lines * fontSize };
+    const onClick = options?.onClick ? options.onClick : () => {};
+
+    return Tidy.elem(
+      new Button(title, {
+        textColor: options?.textColor ?? "#eeeeee",
+        font: options?.font ?? "PoetsenOne",
+        fontSize: fontSize,
+        lines: lines,
+        size: { w: 0, h: 0 },
+        width: 0,
+        normalImage: options?.normalImage ?? "button_square_depth_flat",
+        hoverImage: options?.hoverImage ?? "button_square_depth_gloss",
+        activeImage: options?.activeImage ?? "button_square_gloss",
+        onClick: onClick,
+      }),
+      {
+        minSize: { w: options?.width ?? 192, h: 64 },
+        stretch: "horizontal",
+      }
+    );
   }
 
   // TODO: Fix ugly API, maybe support overloads?
@@ -359,11 +390,6 @@ export class UI {
       this._mouse.buttonState = "none";
     }
   }
-}
-
-function loadImage(name: string): Drawable {
-  const assetLoader = ServiceLocator.resolve(AssetLoader);
-  return assetLoader.getImage(name);
 }
 
 function hexColorWithAlpha(hex: string, alpha: number): string {

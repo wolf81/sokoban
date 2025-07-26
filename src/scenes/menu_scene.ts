@@ -26,7 +26,7 @@ export class MenuScene extends Scene {
     size: { w: 320, h: 256 },
     stretch: "horizontal",
   });
-  private _guideLabel = UI.label("", { textColor: "#b48000" });
+  private _guideLabel = UI.label("", { textColor: "#b48000", lines: 2 });
 
   private _guide: Instruction[] = [
     { imageName: "walk-push_1", description: "Push a box to move it" },
@@ -54,7 +54,7 @@ export class MenuScene extends Scene {
   private _guideStep: number = this._guide.length - 1;
 
   private _continueButton = UI.button("Continue", {
-    size: 32,
+    fontSize: 32,
     textColor: "b48000",
     onClick: () => continueGame(this._level!),
   });
@@ -65,10 +65,14 @@ export class MenuScene extends Scene {
         Tidy.vstack(
           [
             newPanel([
-              UI.label("Pusherman", { textColor: "#b48000", size: 50 }),
+              UI.label("Pusherman", {
+                textColor: "#b48000",
+                fontSize: 36,
+                width: 320,
+              }),
               this._continueButton,
               UI.button("New Game", {
-                size: 32,
+                fontSize: 32,
                 textColor: "b48000",
                 onClick: () => newGame(),
               }),
@@ -82,7 +86,7 @@ export class MenuScene extends Scene {
         Tidy.vstack([
           UI.flexSpace("vertical"),
           newPanel([
-            UI.label("Instructions", { size: 32, textColor: "#b48000" }),
+            UI.label("Instructions", { fontSize: 32, textColor: "#b48000" }),
             this._guideView,
             this._guideLabel,
           ]),

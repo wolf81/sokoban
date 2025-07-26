@@ -33,13 +33,14 @@ export type PushAction = {
  */
 export type IdleAction = {
   type: ActionType.Idle;
+  dir?: Vector;
 };
 
 export type Action = MoveAction | PushAction | IdleAction;
 
 export const Action = {
-  idle(): IdleAction {
-    return { type: ActionType.Idle };
+  idle(dir?: Vector): IdleAction {
+    return { type: ActionType.Idle, dir: dir };
   },
 
   move(pos: Vector, dir: Vector): MoveAction {
@@ -58,12 +59,20 @@ export const Action = {
 
     switch (action.type) {
       case ActionType.Idle:
+        if (action.dir) {
+          let frames = getFrames(action.dir);
+          player.spriteIndex = frames[frames.length - 1];
+        }
         return;
       case ActionType.Move:
-        movePlayer(player, action);
+        movePlayer(player, action, () => {
+          level.moves.push({ type: action.type, dir: action.dir });
+        });
         break;
       case ActionType.Push:
-        movePlayer(player, action);
+        movePlayer(player, action, () => {
+          level.moves.push({ type: action.type, dir: action.dir });
+        });
         // A box moves in same direction as player.
         action.box.pos = Vector.add(player.pos, action.dir);
         break;
@@ -71,7 +80,11 @@ export const Action = {
   },
 };
 
-function movePlayer(player: Player, action: MoveAction | PushAction) {
+function movePlayer(
+  player: Player,
+  action: MoveAction | PushAction,
+  onFinish: () => void
+): void {
   const toPos = Vector.add(action.pos, action.dir);
   action.frame += 1;
   const t = action.frame / ANIM_FRAME_COUNT;
@@ -83,6 +96,7 @@ function movePlayer(player: Player, action: MoveAction | PushAction) {
   if (t >= 1) {
     player.pos = toPos;
     player.action = Action.idle();
+    onFinish();
   } else {
     player.pos = Vector.lerp(action.pos, toPos, t);
   }

@@ -77,6 +77,11 @@ export class GameScene extends Scene {
       Level.save(this._level);
       showMenu();
     }
+    if (this._level.player.action.type === ActionType.Idle) {
+      if (this._inputListener.isInputReleased(InputAction.ButtonA)) {
+        this.tryRevertMove();
+      }
+    }
 
     // Buffer next direction if key is pressed.
     this._nextDir = Dir.None;
@@ -207,6 +212,34 @@ export class GameScene extends Scene {
     return undefined;
   }
 
+  tryRevertMove(): void {
+    let move = this._level.moves.pop();
+    if (!move) return;
+
+    let player = this._level.player;
+
+    let oppositeDir = getOpposite(move.dir);
+
+    if (move.type === ActionType.Push) {
+      let pushPos = Vector.add(player.pos, move.dir);
+      let box = this.tryGetBox(pushPos);
+      if (box) {
+        box.pos = Vector.add(box.pos, oppositeDir);
+        box.lastPos = Vector.clone(box.pos);
+      }
+    }
+
+    player.pos = Vector.add(player.pos, oppositeDir);
+    player.lastPos = Vector.clone(player.pos);
+
+    let prevMove = this._level.moves[this._level.moves.length - 1];
+    if (prevMove) {
+      player.action = Action.idle(prevMove.dir);
+    } else {
+      player.action = Action.idle(Dir.S);
+    }
+  }
+
   /**
    * Try move the player in a target direction. Movement will fail if the
    * direction is blocked by a wall or box.
@@ -259,4 +292,8 @@ function changeLevel(levelIndex: number) {
 function showMenu() {
   const sceneManager = ServiceLocator.resolve(SceneManager);
   sceneManager.switch(new MenuScene());
+}
+
+function getOpposite(dir: Vector): Vector {
+  return Vector.mul(dir, -1);
 }

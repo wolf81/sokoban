@@ -1,7 +1,7 @@
 import { Box, Entity, Goal, Player } from "./entity";
 import { Grid } from "./grid";
-import { Assert, XmlNode, XmlParser } from "../lib/ignite";
-import { TileType } from "../types";
+import { Assert, Vector, XmlNode, XmlParser } from "../lib/ignite";
+import { ActionType, TileType } from "../types";
 
 const STORAGE_NAME = "state.json";
 
@@ -12,6 +12,7 @@ export type Level = {
   boxes: Box[];
   goals: Goal[];
   turns: number;
+  moves: { type: ActionType; dir: Vector }[];
 };
 
 export const Level = {
@@ -73,6 +74,7 @@ export const Level = {
       boxes: boxes,
       goals: goals,
       turns: 0,
+      moves: [],
     };
   },
 

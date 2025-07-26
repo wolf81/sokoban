@@ -63,58 +63,47 @@ export class MenuScene extends Scene {
     [
       Tidy.hstack(
         [
-          Tidy.border([
-            UI.panel(),
-            Tidy.border(
-              Tidy.vstack<Control>(
-                [
-                  UI.label("Pusherman", { textColor: "#b48000", size: 50 }),
-                  this._continueButton,
-                  UI.button("New Game", {
-                    size: 32,
-                    textColor: "b48000",
-                    onClick: () => newGame(),
-                  }),
-                  UI.flexSpace("vertical"),
-                  UI.label("Settings", { textColor: "#b48000", size: 32 }),
-                ],
-                { spacing: 16 }
-              ),
-              {
-                margin: Tidy.margin(32, 32, 32, 32),
-              }
-            ),
+          newPanel([
+            UI.label("Pusherman", { textColor: "#b48000", size: 50 }),
+            this._continueButton,
+            UI.button("New Game", {
+              size: 32,
+              textColor: "b48000",
+              onClick: () => newGame(),
+            }),
           ]),
-          Tidy.border([
-            UI.panel(),
-            Tidy.border(
-              Tidy.vstack<Control>(
-                [
-                  UI.label("Instructions", { size: 32, textColor: "#b48000" }),
-                  this._guideView,
-                  this._guideLabel,
-                  UI.flexSpace("vertical"),
-                  UI.label("Controls", { size: 32, textColor: "#b48000" }),
-                  UI.label("Press A to move left", {
-                    textColor: "#b48000",
-                  }),
-                  UI.label("Press W to move up", {
-                    textColor: "#b48000",
-                  }),
-                  UI.label("Press S to move down", {
-                    textColor: "#b48000",
-                  }),
-                  UI.label("Press D to move right", {
-                    textColor: "#b48000",
-                  }),
-                ],
-                { spacing: 16 }
-              ),
-              {
-                margin: Tidy.margin(32, 32, 32, 32),
-              }
-            ),
-          ]),
+          Tidy.vstack(
+            [
+              newPanel([
+                UI.label("Instructions", { size: 32, textColor: "#b48000" }),
+                this._guideView,
+                this._guideLabel,
+              ]),
+              newPanel([
+                UI.label("Keyboard Controls", {
+                  size: 32,
+                  textColor: "#b48000",
+                }),
+                UI.label("Press W to move up", {
+                  size: 26,
+                  textColor: "#b48000",
+                }),
+                UI.label("Press S to move down", {
+                  size: 26,
+                  textColor: "#b48000",
+                }),
+                UI.label("Press A to move left", {
+                  size: 26,
+                  textColor: "#b48000",
+                }),
+                UI.label("Press D to move right", {
+                  size: 26,
+                  textColor: "#b48000",
+                }),
+              ]),
+            ],
+            { stretch: "all", spacing: 64 }
+          ),
         ],
         {
           stretch: "all",
@@ -172,6 +161,24 @@ export class MenuScene extends Scene {
   stopGuide() {
     Timer.removeAllTimers();
   }
+}
+
+function newPanel(
+  children: Layout<Control>[] | Layout<Control>,
+  options?: Partial<{ stretch: "none" | "all"; spacing: number }>
+): Layout<Control> {
+  return Tidy.border(
+    [
+      UI.panel(),
+      Tidy.border(
+        Tidy.vstack<Control>(children, {
+          spacing: options?.spacing ?? 16,
+        }),
+        { margin: Tidy.margin(32, 32, 32, 32) }
+      ),
+    ],
+    { stretch: options?.stretch }
+  );
 }
 
 function newGame() {

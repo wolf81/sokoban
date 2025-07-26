@@ -8,10 +8,8 @@ import {
   Renderer,
   InputAction,
 } from "./lib/ignite";
-import { MenuScene } from "./scenes/menu_scene";
+import { LoadingScene } from "./scenes/loading_scene";
 import { Settings } from "./settings";
-// import { UI } from "./core/ui";
-// import { LoadingScene } from "./scenes/loading_scene";
 
 /**
  * The Game class contains the core game logic.
@@ -35,11 +33,7 @@ export class Game {
   }
 
   async init(): Promise<void> {
-    await this._assetLoader.preload();
-
-    this._assetLoader.loadSpriteSheet("sokoban_spritesheet");
-
-    this._sceneManager.switch(new MenuScene());
+    this._sceneManager.switch(new LoadingScene());
   }
 
   update(dt: number) {

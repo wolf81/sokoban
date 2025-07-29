@@ -1,4 +1,4 @@
-import { Sprite, SpriteSheet, Spritesheet } from "./spritesheet";
+import { Sprite, Spritesheet } from "./spritesheet";
 import { XmlNode, XmlParser } from "./xml_parser";
 
 function getFileName(path: string): string {
@@ -24,7 +24,7 @@ export class AssetLoader {
   private _imageRegistry = new Map<string, HTMLImageElement>();
   private _audioRegistry = new Map<string, HTMLAudioElement>();
   private _xmlRegistry = new Map<string, XmlNode>();
-  private _spriteSheetRegistry = new Map<string, SpriteSheet>();
+  private _spriteSheetRegistry = new Map<string, Sprite[]>();
 
   /**
    * Get an image asset by name.
@@ -59,8 +59,8 @@ export class AssetLoader {
    * @param index
    * @returns
    */
-  getSpriteSheet(name: string): SpriteSheet {
-    return this._spriteSheetRegistry.get(name)!;
+  getSpriteSheet(name: string) {
+    return this._spriteSheetRegistry.get(name);
   }
 
   /**
@@ -136,6 +136,6 @@ export class AssetLoader {
   loadSpriteSheet(xmlName: string) {
     const xml = this.getXml(xmlName);
     const spriteSheet = Spritesheet.new(xml);
-    this._spriteSheetRegistry.set(spriteSheet.image, spriteSheet);
+    this._spriteSheetRegistry.set(spriteSheet.image, spriteSheet.sprites);
   }  
 }

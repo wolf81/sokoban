@@ -7,13 +7,8 @@ export type Sprite = {
   h: number;
 };
 
-export type SpriteSheet = {
-  image: string,
-  sprites: Sprite[]
-}
-
 export const Spritesheet = {
-  new(xml: XmlNode): SpriteSheet {
+  new(xml: XmlNode): { image: string; sprites: Sprite[] } {
     const sprites: Sprite[] = [];
 
     const imagePath = xml.attributes["imagePath"];

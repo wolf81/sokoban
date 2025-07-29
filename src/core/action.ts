@@ -1,5 +1,5 @@
 import { AudioHelper } from "../helpers/audio_helper";
-import { SpriteAnimator, Vector } from "../lib/ignite";
+import { Vector } from "../lib/ignite";
 import { ActionType, Dir } from "../types";
 import { Box, Player } from "./entity";
 import { Level } from "./level";
@@ -60,7 +60,8 @@ export const Action = {
     switch (action.type) {
       case ActionType.Idle:
         if (action.dir) {
-          setPlayerAnimation(player, action.dir, false);
+          let frames = getFrames(action.dir);
+          player.spriteIndex = frames[frames.length - 1];
         }
         return;
       case ActionType.Move:
@@ -76,8 +77,6 @@ export const Action = {
         action.box.pos = Vector.add(player.pos, action.dir);
         break;
     }
-
-    SpriteAnimator.update(player.animator, player.animations, dt);
   },
 };
 
@@ -89,34 +88,30 @@ function movePlayer(
   const toPos = Vector.add(action.pos, action.dir);
   action.frame += 1;
   const t = action.frame / ANIM_FRAME_COUNT;
-  setPlayerAnimation(player, action.dir, true);
+
+  const frames = getFrames(action.dir);
+  const frameIdx = Math.floor(action.frame / frames.length);
+  player.spriteIndex = frames[frameIdx];
 
   if (t >= 1) {
     player.pos = toPos;
     player.action = Action.idle();
-    setPlayerAnimation(player, action.dir, false);
-
     onFinish();
   } else {
     player.pos = Vector.lerp(action.pos, toPos, t);
   }
 }
 
-function setPlayerAnimation(player: Player, dir: Vector, isMoving: boolean) {
-  if (Vector.isEqual(dir, Dir.E)) {
-    player.animator.current = isMoving ? "moveE" : "idleE";
-    player.animator.frameIndex = 0;
+function getFrames(dir: Vector): number[] {
+  let frames: number[] = [86, 85, 87, 85];
+  if (Vector.isEqual(dir, Dir.S)) {
+    frames = [83, 82, 84, 82];
   }
   if (Vector.isEqual(dir, Dir.W)) {
-    player.animator.current = isMoving ? "moveW" : "idleW";
-    player.animator.frameIndex = 0;
+    frames = [98, 97, 99, 97];
   }
-  if (Vector.isEqual(dir, Dir.N)) {
-    player.animator.current = isMoving ? "moveN" : "idleN";
-    player.animator.frameIndex = 0;
+  if (Vector.isEqual(dir, Dir.E)) {
+    frames = [95, 94, 96, 94];
   }
-  if (Vector.isEqual(dir, Dir.S)) {
-    player.animator.current = isMoving ? "moveS" : "idleS";
-    player.animator.frameIndex = 0;
-  }
+  return frames;
 }

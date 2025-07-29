@@ -43,8 +43,8 @@ export const LevelHelper = {
     }
 
     const assetLoader = ServiceLocator.resolve(AssetLoader);
-    const image = assetLoader.getImage("sokoban_spritesheet")!;
     const spriteSheet = assetLoader.getSpriteSheet("sokoban_spritesheet")!;
+    const image = assetLoader.getImage(spriteSheet.image)!;
 
     // Generate a texture using the coordinates from the flood fill.
     return TextureHelper.generate(w, h, (ctx) => {
@@ -55,10 +55,22 @@ export const LevelHelper = {
           const tile = Grid.getTile(level.grid, x, y);
           switch (tile) {
             case TileType.Wall:
-              drawSprite(ctx, image, spriteSheet[1], x * TILE_W, y * TILE_H);
+              drawSprite(
+                ctx,
+                image,
+                spriteSheet.sprites[1],
+                x * TILE_W,
+                y * TILE_H
+              );
               break;
             default:
-              drawSprite(ctx, image, spriteSheet[69], x * TILE_W, y * TILE_H);
+              drawSprite(
+                ctx,
+                image,
+                spriteSheet.sprites[69],
+                x * TILE_W,
+                y * TILE_H
+              );
               break;
           }
         }
@@ -68,7 +80,7 @@ export const LevelHelper = {
         drawSprite(
           ctx,
           image,
-          spriteSheet[72],
+          spriteSheet.sprites[72],
           goal.pos.x * TILE_W,
           goal.pos.y * TILE_H
         );

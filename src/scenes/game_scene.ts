@@ -12,6 +12,7 @@ import {
   Scene,
   SceneManager,
   ServiceLocator,
+  SpriteAnimator,
   Timer,
   Vector,
 } from "../lib/ignite";
@@ -113,11 +114,11 @@ export class GameScene extends Scene {
         let remaining = boxes.length;
 
         for (let box of boxes) {
-          box.spriteIndex = 20;
+          box.animator.current = "normal";
 
           for (let i = 0; i < goalPositions.length; i++) {
             if (Vector.isEqual(box.pos, goalPositions[i])) {
-              box.spriteIndex = 10;
+              box.animator.current = "active";
               remaining -= 1;
               goalPositions.splice(i, 1);
               break;
@@ -169,12 +170,12 @@ export class GameScene extends Scene {
 
     const assetLoader = ServiceLocator.resolve(AssetLoader);
     const image = assetLoader.getImage("sokoban_spritesheet")!;
-    const spriteSheet = assetLoader.getSpriteSheet("sokoban_spritesheet")!;
 
     // Define actor drawing in local scope, so we can re-use the spritesheet &
     // image references on every call.
     const drawActor = (actor: Actor) => {
-      const sprite = spriteSheet[actor.spriteIndex];
+      const frame = SpriteAnimator.getFrame(actor.animator, actor.animations);
+      const sprite = frame.sprite;
       const ox = (TILE_W - sprite.w) / 2;
       const oy = (TILE_H - sprite.h) / 2;
 
@@ -236,6 +237,7 @@ export class GameScene extends Scene {
       if (box) {
         box.pos = Vector.add(box.pos, oppositeDir);
         box.lastPos = Vector.clone(box.pos);
+        this._checkFinished = true;
       }
     }
 

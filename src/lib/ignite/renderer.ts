@@ -82,8 +82,6 @@ export class Renderer {
       font: string;
       color: string;
       align: TextAlign;
-      lines: number;
-      width: number;
     }> = {}
   ) {
     this._draws += 1;
@@ -92,72 +90,21 @@ export class Renderer {
       this._ctx.font = options.font;
     }
 
-    // TODO: could be smart to cache this for a font.
-    const heightMetrics = this._ctx.measureText("Hg");
-    const h =
-      heightMetrics.actualBoundingBoxAscent +
-      heightMetrics.actualBoundingBoxDescent;
-
     const metrics = this._ctx.measureText(text);
-
-    let oy = options.lines === 1 ? heightMetrics.hangingBaseline - h / 2 : 0;
-
-    if (options.width && metrics.width > options.width) {
-      const spaceWidth = this._ctx.measureText(" ").width;
-      const maxLineWidth = options.width;
-      const words = text.split(" ").reverse();
-      let lineWidth = 0;
-      let lines = 0;
-      let maxLines = options.lines ?? 1;
-      while (lines < maxLines) {
-        let lineText = "";
-        let ox = 0;
-
-        while (words.length > 0) {
-          let word = words.pop()!;
-          let wordWidth = this._ctx.measureText(word).width;
-          if (lineWidth + wordWidth > maxLineWidth) {
-            words.push(word);
-            break;
-          } else {
-            lineText += word += " ";
-            lineWidth += wordWidth += spaceWidth;
-          }
-        }
-
-        ox = 0;
-        switch (options.align) {
-          case "center":
-            ox -= lineWidth / 2;
-            break;
-          case "right":
-            ox -= lineWidth;
-            break;
-        }
-
-        this._ctx.fillStyle = options.color ?? "#ffffff";
-        this._ctx.fillText(lineText, x + ox, y + oy);
-
-        lines += 1;
-        lineWidth = 0;
-        oy += h;
-      }
-
-      this._draws += 1;
-    } else {
-      switch (options.align) {
-        case "center":
-          x -= metrics.width / 2;
-          break;
-        case "right":
-          x -= metrics.width;
-          break;
-      }
-
-      this._draws += 1;
-      this._ctx.fillStyle = options.color ?? "#ffffff";
-      this._ctx.fillText(text, x, y + oy);
+    const h =
+      metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+    switch (options.align) {
+      case "center":
+        x -= metrics.width / 2;
+        break;
+      case "right":
+        x -= metrics.width;
+        break;
     }
+
+    this._draws += 1;
+    this._ctx.fillStyle = options.color ?? "#ffffff";
+    this._ctx.fillText(text, x, y + h / 2);
   }
 
   /**
@@ -205,5 +152,5 @@ export class Renderer {
     } else {
       this._ctx.restore();
     }
-  }
+  }  
 }

@@ -54,7 +54,7 @@ export class InputListener {
       ["d", InputAction.DPadR],
       ["backspace", InputAction.ButtonA],
       ["enter", InputAction.Start],
-      ["escape", InputAction.Select],
+      ["esc", InputAction.Select],
     ]);
     this._gamepadInputMap = new Map<number, InputAction>([
       [12, InputAction.DPadU],

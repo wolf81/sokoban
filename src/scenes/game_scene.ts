@@ -175,8 +175,8 @@ export class GameScene extends Scene {
     // image references on every call.
     const drawActor = (actor: Actor) => {
       const sprite = spriteSheet.sprites[actor.spriteIndex];
-      const ox = (TILE_W - sprite.w) / 2;
-      const oy = (TILE_H - sprite.h) / 2;
+      const ox = TILE_W / 2 - sprite.w;
+      const oy = TILE_H / 2 - sprite.h;
 
       const pos = Vector.lerp(actor.lastPos, actor.pos, Runloop.alpha);
       renderer.drawSprite(
@@ -185,7 +185,8 @@ export class GameScene extends Scene {
         Math.floor(pos.x * TILE_W),
         Math.floor(pos.y * TILE_H),
         ox,
-        oy
+        oy,
+        Math.PI / 2
       );
     };
 

@@ -111,8 +111,6 @@ export class MenuScene extends Scene {
   constructor() {
     super();
 
-    UI.setStyle(uiStyle);
-
     this._layout = UI.layout();
 
     this._level = Level.load();
@@ -274,30 +272,3 @@ function continueGame(level: Level) {
   const sceneManager = ServiceLocator.resolve(SceneManager);
   sceneManager.switch(new GameScene(level));
 }
-
-const uiStyle: Style = {
-  button: {
-    font: "32px PoetsenOne",
-    minSize: { w: 192, h: 64 },
-    textColor: "#b48000",
-    background: {
-      normal: "button_square_depth_flat",
-      hover: "button_square_depth_gloss",
-      active: "button_square_gloss",
-    },
-  },
-  label: {
-    font: "36px PoetsenOne",
-    textColor: "#b48000",
-    align: "center",
-    padding: 10,
-  },
-  panel: {
-    background: "button_square_border",
-    padding: 16,
-    spacing: 16,
-  },
-  imageView: {
-    minSize: { w: 320, h: 256 },
-  },
-};

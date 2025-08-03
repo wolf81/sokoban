@@ -1,4 +1,3 @@
-import { UI } from "./core/ui";
 import {
   SceneManager,
   InputListener,
@@ -28,8 +27,6 @@ export class Game {
 
     this._assetLoader = new AssetLoader();
     ServiceLocator.register(AssetLoader, this._assetLoader);
-
-    UI.init(canvas);
   }
 
   async init(): Promise<void> {
@@ -47,7 +44,6 @@ export class Game {
     this._inputListener.update();
 
     Timer.update(dt);
-    UI.update();
   }
 
   draw(renderer: Renderer) {

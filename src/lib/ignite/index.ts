@@ -12,8 +12,6 @@ export * from './xml_parser'
 
 export * from './vector'
 
-export * from './tidy'
-
 export * from './asset_loader'
 
 export * from './assert'
@@ -24,4 +22,12 @@ export * from './service_locator'
 
 export * from './spritesheet'
 
+export * from './sprite_animation'
+
 export * from './camera'
+
+export * from './ecs'
+
+export * from './ui'
+
+export * from './deep_partial'

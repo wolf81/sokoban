@@ -168,13 +168,13 @@ export class GameScene extends Scene {
     renderer.drawImage(this._background, 0, 0);
 
     const assetLoader = ServiceLocator.resolve(AssetLoader);
-    const image = assetLoader.getImage("sokoban_spritesheet")!;
-    const spriteSheet = assetLoader.getSpriteSheet("sokoban_spritesheet")!;
+    const image = assetLoader.getImage("sokoban_spritesheet");
+    const spriteSheet = assetLoader.getSpriteSheet("sokoban_spritesheet");
 
     // Define actor drawing in local scope, so we can re-use the spritesheet &
     // image references on every call.
     const drawActor = (actor: Actor) => {
-      const sprite = spriteSheet[actor.spriteIndex];
+      const sprite = spriteSheet.sprites[actor.spriteIndex];
       const ox = (TILE_W - sprite.w) / 2;
       const oy = (TILE_H - sprite.h) / 2;
 

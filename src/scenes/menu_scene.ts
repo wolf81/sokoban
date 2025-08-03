@@ -1,16 +1,16 @@
 import { CANVAS_H, CANVAS_W } from "../constants";
 import { Level } from "../core/level";
-import { Control, UI } from "../core/ui";
 import { AudioHelper } from "../helpers/audio_helper";
 import {
   ServiceLocator,
   SceneManager,
   Scene,
   Layout,
-  Tidy,
   Renderer,
   AssetLoader,
   Timer,
+  UI,
+  Style,
 } from "../lib/ignite";
 import { GameScene } from "./game_scene";
 
@@ -22,11 +22,7 @@ type Instruction = {
 export class MenuScene extends Scene {
   private _level: Level | undefined;
 
-  private _guideView = UI.imageView(undefined, {
-    size: { w: 320, h: 256 },
-    stretch: "horizontal",
-  });
-  private _guideLabel = UI.label("", { textColor: "#b48000", lines: 2 });
+  private readonly _layout: Layout;
 
   private _guide: Instruction[] = [
     { imageName: "walk-push_1", description: "Push a box to move it" },
@@ -53,6 +49,7 @@ export class MenuScene extends Scene {
   ];
   private _guideStep: number = this._guide.length - 1;
 
+  /*
   private _resetLevelsButton = UI.button("Reset Levels", {
     fontSize: 32,
     textColor: "#b48000",
@@ -109,17 +106,74 @@ export class MenuScene extends Scene {
     ],
     { margin: Tidy.margin(64, 64, 64, 64) }
   );
+  */
 
   constructor() {
     super();
 
-    this._layout.reshape(0, 0, CANVAS_W, CANVAS_H);
+    UI.setStyle(uiStyle);
+
+    this._layout = UI.layout();
 
     this._level = Level.load();
-    this._continueButton.widget.isEnabled = this._level != null;
 
-    let levels = localStorage.getItem("levels.xml");
-    this._resetLevelsButton.widget.isEnabled = levels != null;
+    const label = UI.label("Pusherman");
+
+    const newGameButton = UI.button("New Game", {
+      options: {
+        click: () => newGame(),
+      },
+    });
+
+    const continueButton = UI.button("Continue", {
+      options: {
+        enabled: () => this._level != null,
+        click: () => continueGame(this._level!),
+      },
+    });
+
+    const importButton = UI.button("Import Levels", {
+      options: {
+        click: async () => await this.importLevels().then(this.updateUI),
+      },
+    });
+
+    const levels = localStorage.getItem("levels.xml");
+    const resetButton = UI.button("Reset Levels", {
+      options: {
+        enabled: () => levels != null,
+        click: async () => await this.resetLevels().then(this.updateUI),
+      },
+    });
+
+    const panel1 = UI.panel([
+      label,
+      continueButton,
+      newGameButton,
+      importButton,
+      resetButton,
+    ]);
+    this._layout.addChild(
+      panel1,
+      { x: 64, y: 64 },
+      { anchor: "top-left", size: { w: 320, h: "wrap" } }
+    );
+
+    const guideView = UI.imageView(undefined, {
+      // size: { w: 320, h: 256 },
+      // stretch: "horizontal",
+    });
+    const guideLabel = UI.label("");
+    // private _guideLabel = UI.label("", { textColor: "#b48000", lines: 2 });
+
+    const panel2 = UI.panel([guideView, guideLabel]);
+    this._layout.addChild(
+      panel2,
+      { x: CANVAS_W - 64, y: CANVAS_H - 64 },
+      { anchor: "bottom-right", size: { w: "wrap", h: "wrap" } }
+    );
+
+    this._layout.resize(CANVAS_W, CANVAS_H);
   }
 
   override async init(): Promise<void> {
@@ -131,15 +185,11 @@ export class MenuScene extends Scene {
   }
 
   update(dt: number): void {
-    for (let widget of this._layout.widgets()) {
-      widget.update(dt);
-    }
+    this._layout.update(dt);
   }
 
   draw(renderer: Renderer): void {
-    for (let widget of this._layout.widgets()) {
-      widget.draw(renderer);
-    }
+    this._layout.draw(renderer);
   }
 
   startGuide() {
@@ -148,8 +198,8 @@ export class MenuScene extends Scene {
       const assetLoader = ServiceLocator.resolve(AssetLoader);
       const step = this._guide[this._guideStep];
 
-      this._guideView.widget.image = assetLoader.getImage(step.imageName);
-      this._guideLabel.widget.text = step.description;
+      // this._guideView.widget.image = assetLoader.getImage(step.imageName);
+      // this._guideLabel.widget.text = step.description;
 
       Timer.after(1.0, () => nextStep());
     };
@@ -163,10 +213,10 @@ export class MenuScene extends Scene {
 
   updateUI() {
     Level.reset();
-    this._continueButton.widget.isEnabled = false;
 
-    const levels = localStorage.getItem("levels.xml");
-    this._resetLevelsButton.widget.isEnabled = levels != null;
+    // this._continueButton.widget.isEnabled = false;
+    // const levels = localStorage.getItem("levels.xml");
+    // this._resetLevelsButton.widget.isEnabled = levels != null;
   }
 
   resetLevels(): Promise<void> {
@@ -213,23 +263,6 @@ export class MenuScene extends Scene {
   }
 }
 
-function newPanel(
-  children: Layout<Control>[] | Layout<Control>
-): Layout<Control> {
-  return Tidy.border(
-    [
-      UI.panel(),
-      Tidy.border(
-        Tidy.vstack<Control>(children, {
-          spacing: 16,
-        }),
-        { margin: Tidy.margin(32, 32, 32, 32) }
-      ),
-    ],
-    { stretch: "none" }
-  );
-}
-
 function newGame() {
   AudioHelper.playSound("click5");
   const sceneManager = ServiceLocator.resolve(SceneManager);
@@ -241,3 +274,30 @@ function continueGame(level: Level) {
   const sceneManager = ServiceLocator.resolve(SceneManager);
   sceneManager.switch(new GameScene(level));
 }
+
+const uiStyle: Style = {
+  button: {
+    font: "32px PoetsenOne",
+    minSize: { w: 192, h: 64 },
+    textColor: "#b48000",
+    background: {
+      normal: "button_square_depth_flat",
+      hover: "button_square_depth_gloss",
+      active: "button_square_gloss",
+    },
+  },
+  label: {
+    font: "36px PoetsenOne",
+    textColor: "#b48000",
+    align: "center",
+    padding: 10,
+  },
+  panel: {
+    background: "button_square_border",
+    padding: 16,
+    spacing: 16,
+  },
+  imageView: {
+    minSize: { w: 320, h: 256 },
+  },
+};
